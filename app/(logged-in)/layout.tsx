@@ -2,15 +2,14 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import React from "react";
 
-const LoggedOutLayout = async ({ children }: { children: React.ReactNode }) => {
+const LoggedInLayout = async ({ children }: { children: React.ReactNode }) => {
   const session = await auth();
 
-  console.log("LoggedOutLayout session", session);
   if (session?.user?.id) {
-    redirect("/");
-  } else {
     return <>{children}</>;
+  } else {
+    redirect("/login");
   }
 };
 
-export default LoggedOutLayout;
+export default LoggedInLayout;

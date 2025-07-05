@@ -1,22 +1,15 @@
-import NextAuth, { DefaultSession } from "next-auth";
+import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import Credentials from "next-auth/providers/credentials";
 import { prisma } from "@/prisma";
-import * as bcrypt from "bcrypt-ts-edge";
+import authConfig from "./auth.config";
 
 declare module "next-auth" {
-  interface Session extends DefaultSession {
-    user: {
-      id: string;
-      forename: string;
-      surname: string;
-    } & DefaultSession["user"];
-  }
-
   interface User {
-    id: string;
-    forename: string;
-    surname: string;
+    forename?: string;
+    surname?: string;
+    role?: string;
+
+    stripeId?: string;
   }
 }
 
@@ -25,38 +18,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   session: {
     strategy: "jwt",
   },
-  providers: [
-    Credentials({
-      // You can specify which fields should be submitted, by adding keys to the `credentials` object.
-      // e.g. domain, username, password, 2FA token, etc.
-      credentials: {
-        email: {},
-        password: {},
-      },
-      authorize: async (credentials) => {
-        const user = await prisma.user.findUnique({
-          where: {
-            email: credentials?.email as string,
-          },
-        });
+  secret: process.env.NEXTAUTH_SECRET,
 
-        if (!user || !user.emailVerified) {
-          return null; // No user found with this email
-        }
-
-        const validPassword = await bcrypt.compare(
-          credentials.password as string,
-          user.password
-        );
-        if (!validPassword) {
-          return null; // Password does not match
-        }
-
-        // return user object with their profile data
-        return user;
-      },
-    }),
-  ],
   callbacks: {
     async session({ session, token }) {
       // Add user id to the session object
@@ -82,4 +45,5 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return token;
     },
   },
+  ...authConfig,
 });
