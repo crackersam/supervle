@@ -1,15 +1,12 @@
 import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { prisma } from "@/prisma";
+import { prisma } from "@/prisma-singleton";
 import authConfig from "./auth.config";
 
 declare module "next-auth" {
   interface User {
     forename?: string;
     surname?: string;
-    role?: string;
-
-    stripeId?: string;
   }
 }
 
@@ -18,7 +15,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   session: {
     strategy: "jwt",
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.AUTH_SECRET,
 
   callbacks: {
     async session({ session, token }) {
@@ -30,18 +27,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
       return session;
     },
-    async jwt({ token }) {
-      // Add user id to the JWT token
-      const user = await prisma.user.findUnique({
-        where: {
-          email: token.email as string,
-        },
-      });
-      if (user) {
-        token.id = user.id;
-        token.forename = user.forename;
-        token.surname = user.surname;
-      }
+    async jwt({ token, user }) {
+      if (!user?.id) return token;
+      token.id = user.id;
+      token.forename = user.forename;
+      token.surname = user.surname;
+
       return token;
     },
   },

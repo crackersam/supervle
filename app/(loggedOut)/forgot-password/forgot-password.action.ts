@@ -1,7 +1,7 @@
 "use server";
 
 import { actionClient } from "@/lib/safe-action";
-import { prisma } from "@/prisma";
+import { prisma } from "@/prisma-singleton";
 import crypto from "crypto";
 import { forgotPasswordSchema } from "@/schemas/forgot-password";
 

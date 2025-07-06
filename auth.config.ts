@@ -1,7 +1,7 @@
 import type { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import * as bcrypt from "bcrypt-ts-edge";
-import { prisma } from "@/prisma";
+import { prisma } from "@/prisma-singleton";
 
 export default {
   providers: [

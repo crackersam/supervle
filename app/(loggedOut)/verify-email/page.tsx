@@ -1,21 +1,25 @@
-import { prisma } from '@/prisma'
-import React from 'react'
-import Image from 'next/image'
-import school from '@/public/school.jpg'
+import { prisma } from "@/prisma-singleton";
+import React from "react";
+import Image from "next/image";
+import school from "@/public/school.jpg";
 
-const VerifyEmail = async ({ searchParams }: { searchParams: Promise<{ token: string }> }) => {
-  let success
-  let error
+const VerifyEmail = async ({
+  searchParams,
+}: {
+  searchParams: Promise<{ token: string }>;
+}) => {
+  let success;
+  let error;
 
-  const { token } = await searchParams
+  const { token } = await searchParams;
   try {
     const verificationToken = await prisma.verificationToken.findFirst({
       where: {
         token,
       },
-    })
+    });
     if (!verificationToken || verificationToken.expires < new Date()) {
-      error = 'Invalid token'
+      error = "Invalid token";
     } else {
       await prisma.user.update({
         where: {
@@ -24,16 +28,16 @@ const VerifyEmail = async ({ searchParams }: { searchParams: Promise<{ token: st
         data: {
           emailVerified: new Date(),
         },
-      })
+      });
       await prisma.verificationToken.deleteMany({
         where: {
           userId: verificationToken.userId,
         },
-      })
-      success = 'Email verified'
+      });
+      success = "Email verified";
     }
   } catch (error) {
-    console.error(error)
+    console.error(error);
   }
 
   return (
@@ -53,12 +57,15 @@ const VerifyEmail = async ({ searchParams }: { searchParams: Promise<{ token: st
       <div className="relative z-10 flex items-center justify-center h-full">
         <div className="flex w-full items-center flex-col justify-center bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto">
           <div className="flex justify-center">
-            <h1 className="text-2xl font-bold justify-center mb-3">Verify Email</h1>
+            <h1 className="text-2xl font-bold justify-center mb-3">
+              Verify Email
+            </h1>
           </div>
           <div className="flex flex-wrap">
             {success && (
               <div className="flex flex-col justify-center mx-auto">
-                <span className="text-green-500 mx-auto">{success}.</span> You can now login.
+                <span className="text-green-500 mx-auto">{success}.</span> You
+                can now login.
               </div>
             )}
             {error && <div className="text-red-500 mx-auto">{error}.</div>}
@@ -66,7 +73,7 @@ const VerifyEmail = async ({ searchParams }: { searchParams: Promise<{ token: st
         </div>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default VerifyEmail
+export default VerifyEmail;
