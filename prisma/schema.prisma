@@ -84,3 +84,11 @@ model passwordResetToken {
 
   @@id([identifier, token])
 }
+
+model Event {
+  id    Int      @id @default(autoincrement())
+  title String
+  start DateTime
+  end   DateTime
+  rrule String? // iCal-style recurrence rule, e.g. "FREQ=WEEKLY;BYDAY=MO,WE,FR"
+}
