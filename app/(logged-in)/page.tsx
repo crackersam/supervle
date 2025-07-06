@@ -1,10 +1,12 @@
 import { auth } from "@/auth";
-import React from "react";
+import { redirect } from "next/navigation";
 
 const Home = async () => {
   const session = await auth();
-  console.log("Home session", session);
-  return <div>Hello</div>;
+  if (session?.user?.id) {
+    return redirect(`/${session.user.role?.toLowerCase()}`);
+  } else {
+    redirect("/login");
+  }
 };
-
 export default Home;

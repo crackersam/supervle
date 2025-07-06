@@ -5,7 +5,6 @@ import React from "react";
 const LoggedOutLayout = async ({ children }: { children: React.ReactNode }) => {
   const session = await auth();
 
-  console.log("LoggedOutLayout session", session);
   if (session?.user?.id) {
     redirect("/");
   } else {

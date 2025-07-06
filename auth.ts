@@ -7,6 +7,7 @@ declare module "next-auth" {
   interface User {
     forename?: string;
     surname?: string;
+    role?: string;
   }
 }
 
@@ -24,14 +25,23 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.id = token.id as string;
         session.user.forename = token.forename as string;
         session.user.surname = token.surname as string;
+        session.user.role = token.role as string;
       }
       return session;
     },
-    async jwt({ token, user }) {
-      if (!user?.id) return token;
-      token.id = user.id;
-      token.forename = user.forename;
-      token.surname = user.surname;
+    async jwt({ token }) {
+      if (!token.sub) return token;
+      const updatedUser = await prisma.user.findUnique({
+        where: {
+          id: token.sub as string,
+        },
+      });
+      if (!updatedUser?.id) return token;
+
+      token.id = updatedUser.id;
+      token.forename = updatedUser.forename;
+      token.surname = updatedUser.surname;
+      token.role = updatedUser.role;
 
       return token;
     },
