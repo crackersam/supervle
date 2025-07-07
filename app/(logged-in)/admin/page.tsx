@@ -4,7 +4,18 @@ import Calendars from "./calendars";
 import React from "react";
 
 export default async function AdminPage() {
-  const all = await prisma.event.findMany({ orderBy: { start: "asc" } });
+  const all = await prisma.lesson.findMany({
+    where: {
+      users: {
+        some: {
+          userId: "cmcq4wqtg0000lwtxxqh1y1d3", // Replace with the actual user ID or context
+        },
+      },
+    },
+    orderBy: {
+      start: "asc",
+    },
+  });
 
   // Choose your window
   const windowStart = new Date();

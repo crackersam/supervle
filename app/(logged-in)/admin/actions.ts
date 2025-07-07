@@ -38,8 +38,14 @@ export async function createEvent(formData: FormData) {
   }
 
   // Persist to database
-  await prisma.event.create({
+  const lesson = await prisma.lesson.create({
     data: { title, start, end, rrule: rruleString },
+  });
+  await prisma.enrollment.create({
+    data: {
+      userId: "cmcq4wqtg0000lwtxxqh1y1d3", // Replace with the actual user ID or context
+      lessonId: lesson.id,
+    },
   });
 
   // Revalidate the admin calendar page

@@ -29,8 +29,8 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  VerificationToken VerificationToken[]
-
+  VerificationToken  VerificationToken[]
+  lessons            Enrollment[]         @relation("Enrollments_user")
   passwordResetToken passwordResetToken[]
 }
 
@@ -85,10 +85,25 @@ model passwordResetToken {
   @@id([identifier, token])
 }
 
-model Event {
-  id    Int      @id @default(autoincrement())
-  title String
-  start DateTime
-  end   DateTime
-  rrule String? // iCal-style recurrence rule, e.g. "FREQ=WEEKLY;BYDAY=MO,WE,FR"
+model Lesson {
+  id        Int          @id @default(autoincrement())
+  title     String
+  createdAt DateTime     @default(now())
+  start     DateTime
+  end       DateTime
+  rrule     String?
+  users     Enrollment[] @relation("Enrollments_lesson")
+}
+
+model Enrollment {
+  userId     String
+  lessonId   Int
+  enrolledAt DateTime @default(now())
+
+  // relations
+  user   User   @relation("Enrollments_user", fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation("Enrollments_lesson", fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@id([userId, lessonId])
+  @@index([lessonId])
 }
