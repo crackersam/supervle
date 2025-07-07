@@ -19,6 +19,7 @@ export async function createEvent(formData: FormData) {
   const title = formData.get("title") as string;
   const start = new Date(formData.get("start") as string);
   const end = new Date(formData.get("end") as string);
+  const userId = formData.get("userId") as string;
 
   let rruleString: string | null = null;
   const freq = (formData.get("freq") as string) || "";
@@ -43,7 +44,7 @@ export async function createEvent(formData: FormData) {
   });
   await prisma.enrollment.create({
     data: {
-      userId: "cmcq4wqtg0000lwtxxqh1y1d3", // Replace with the actual user ID or context
+      userId,
       lessonId: lesson.id,
     },
   });
