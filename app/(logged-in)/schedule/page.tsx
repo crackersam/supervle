@@ -59,12 +59,11 @@ export default async function CalendarPage() {
       ];
     }
   }
-
-  // Prepare calendar map
-  const calendarMap: Record<string, PerUserCalendar> = {};
   const windowStart = new Date();
   const windowEnd = new Date();
   windowEnd.setMonth(windowEnd.getMonth() + 3);
+  // Prepare calendar map
+  const calendarMap: Record<string, PerUserCalendar> = {};
 
   const expandLessons = (lessons: Lesson[]): CalendarEvent[] =>
     lessons.flatMap((lesson) => {

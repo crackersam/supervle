@@ -1,10 +1,8 @@
 "use client";
 
-import { createEvent } from "@/app/(logged-in)/schedule/actions";
-import { useSession } from "next-auth/react";
+import { createEvent } from "@/app/(logged-in)/admin/schedule/actions";
 
-export default function AddEventForm() {
-  const session = useSession();
+export default function AddEventForm({ userId }: { userId?: string }) {
   return (
     <form
       onSubmit={async (e: React.FormEvent<HTMLFormElement>) => {
@@ -38,7 +36,7 @@ export default function AddEventForm() {
         title="Interval"
       />
       <input name="until" type="date" title="Ends on" />
-      <input type="hidden" name="userId" value={session.data?.user?.id || ""} />
+      <input type="hidden" name="userId" value={userId} />
 
       <button type="submit">Add Event</button>
     </form>

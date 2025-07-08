@@ -1,9 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { Session } from "next-auth";
-import { SessionProvider } from "next-auth/react";
-import AddEventForm from "@/components/AddEventForm";
-import Calendars from "./calendars";
+import Calendars from "@/components/calendars";
 
 export interface StudentInfo {
   id: string;
@@ -46,9 +44,6 @@ export default function CalendarClient({
     <div>
       {session.user?.role === "ADMIN" && (
         <div className="mb-4">
-          <SessionProvider session={session}>
-            <AddEventForm />
-          </SessionProvider>
           <label htmlFor="student-select" className="mr-2">
             Select Student:
           </label>
