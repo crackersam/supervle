@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -30,10 +30,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { deleteLesson } from "./actions";
+import { deleteLesson, enrolUser } from "./actions";
+import { toast } from "sonner";
 
 const Lessons = ({
   lessons,
+  users,
 }: {
   lessons: ({
     users: { userId: string; lessonId: number; enrolledAt: Date }[];
@@ -45,7 +47,15 @@ const Lessons = ({
     end: Date;
     rrule: string | null;
   })[];
+  users: { id: string; forename: string; surname: string }[];
 }) => {
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Filter users by matching the search term against full name
+  const filteredUsers = users.filter((user) => {
+    const fullName = `${user.forename} ${user.surname}`.toLowerCase();
+    return fullName.includes(searchTerm.toLowerCase());
+  });
   function getUntilDate(rruleString: string): Date | null {
     const rule = RRule.fromString(rruleString);
     // .options.until is already a JS Date (in UTC)
@@ -138,6 +148,53 @@ const Lessons = ({
                         servers.
                       </DialogDescription>
                     </DialogHeader>
+                    <form
+                      action={async (formData) => {
+                        const result = await enrolUser(formData);
+                        if (result.success) {
+                          toast.success(result.message);
+                        } else {
+                          toast.error(result.message);
+                        }
+                      }}
+                      className="space-y-4"
+                    >
+                      <div className="grid gap-4">
+                        <input
+                          type="hidden"
+                          name="lessonId"
+                          value={lesson.id}
+                        />
+                        <label htmlFor="userSearch" className="block">
+                          Search User to Enroll:
+                        </label>
+                        <input
+                          type="text"
+                          id="userSearch"
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                          placeholder="Type forename or surname"
+                          className="border rounded p-2 w-full"
+                        />
+
+                        <select
+                          name="userId"
+                          id="userId"
+                          className="border rounded p-2 w-full"
+                          required
+                        >
+                          {filteredUsers.map((user) => (
+                            <option key={user.id} value={user.id}>
+                              {user.forename} {user.surname}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <Button type="submit" className="w-full">
+                        Enroll User
+                      </Button>
+                    </form>
                   </DialogContent>
                 </Dialog>
               </TableCell>

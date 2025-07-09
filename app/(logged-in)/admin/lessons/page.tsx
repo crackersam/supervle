@@ -8,8 +8,9 @@ const LessonsPage = async () => {
       users: true,
     },
   });
+  const users = await prisma.user.findMany();
 
-  return <Lessons lessons={lessons} />;
+  return <Lessons lessons={lessons} users={users} />;
 };
 
 export default LessonsPage;
