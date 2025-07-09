@@ -17,7 +17,9 @@ const LessonsPage = async () => {
       users: true,
     },
   });
-  const users = await prisma.user.findMany({ where: { role: "STUDENT" } });
+  const users = await prisma.user.findMany({
+    where: { role: { in: ["STUDENT", "TEACHER"] } },
+  });
 
   return (
     <>

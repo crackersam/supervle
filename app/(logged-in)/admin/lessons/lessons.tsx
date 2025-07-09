@@ -136,7 +136,7 @@ const Lessons = ({
                 <Dialog>
                   <DialogTrigger asChild>
                     <Button variant="default" className="ml-2">
-                      Enroll Student
+                      Enroll User
                     </Button>
                   </DialogTrigger>
                   <DialogContent>

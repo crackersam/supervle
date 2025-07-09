@@ -15,7 +15,9 @@ export const deleteLesson = async (lessonId: number) => {
 export const enrolUser = async (formData: FormData) => {
   const lessonId = parseInt(formData.get("lessonId") as string, 10);
   const userId = formData.get("userId") as string;
-
+  const lesson = await prisma.lesson.findUnique({
+    where: { id: lessonId },
+  });
   // Check if the user is already enrolled in the lesson
   const existingEnrollment = await prisma.enrollment.findFirst({
     where: { lessonId, userId },
@@ -24,7 +26,7 @@ export const enrolUser = async (formData: FormData) => {
   if (existingEnrollment) {
     return {
       success: false,
-      message: `This user is already enrolled in lesson ${lessonId}`,
+      message: `This user is already enrolled in lesson ${lesson?.title} (ID: ${lessonId})`,
     };
   }
 
@@ -36,7 +38,7 @@ export const enrolUser = async (formData: FormData) => {
   revalidatePath("/admin/lessons");
   return {
     success: true,
-    message: `User successfully enrolled in lesson ${lessonId}`,
+    message: `User successfully enrolled in lesson ${lesson?.title} (ID: ${lessonId})`,
   };
 };
 
