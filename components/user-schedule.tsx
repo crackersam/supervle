@@ -47,9 +47,10 @@ function expandLessons(lessons: Lesson[]): CalendarEvent[] {
 
 interface Props {
   user: UserWithLessons;
+  role?: string;
 }
 
-export default function UserSchedule({ user }: Props) {
+export default function UserSchedule({ user, role }: Props) {
   const [open, setOpen] = useState(false);
   return (
     <div className="mb-4 border rounded p-4">
@@ -69,41 +70,42 @@ export default function UserSchedule({ user }: Props) {
               (e) => ({ ...e, id: Number(e.id) })
             )}
           />
-
-          <Table className="mt-4">
-            <TableHeader>
-              <TableRow>
-                <TableCell>Lesson</TableCell>
-                <TableCell>Actions</TableCell>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {user.lessons.length > 0 ? (
-                user.lessons.map((ev) => (
-                  <TableRow key={ev.lessonId}>
-                    <TableCell>{ev.lesson.title}</TableCell>
-                    <TableCell>
-                      <form action={deleteEnrollment} className="inline ml-2">
-                        <input
-                          type="hidden"
-                          name="lessonId"
-                          value={ev.lessonId}
-                        />
-                        <input type="hidden" name="userId" value={user.id} />
-                        <Button type="submit" variant={"destructive"}>
-                          Unenrol
-                        </Button>
-                      </form>
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
+          {role === "ADMIN" && (
+            <Table className="mt-4">
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={2}>No lessons scheduled</TableCell>
+                  <TableCell>Lesson</TableCell>
+                  <TableCell>Actions</TableCell>
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {user.lessons.length > 0 ? (
+                  user.lessons.map((ev) => (
+                    <TableRow key={ev.lessonId}>
+                      <TableCell>{ev.lesson.title}</TableCell>
+                      <TableCell>
+                        <form action={deleteEnrollment} className="inline ml-2">
+                          <input
+                            type="hidden"
+                            name="lessonId"
+                            value={ev.lessonId}
+                          />
+                          <input type="hidden" name="userId" value={user.id} />
+                          <Button type="submit" variant={"destructive"}>
+                            Unenrol
+                          </Button>
+                        </form>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={2}>No lessons scheduled</TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          )}
         </>
       )}
     </div>
