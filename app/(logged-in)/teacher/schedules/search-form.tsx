@@ -24,7 +24,7 @@ export default function SearchForm() {
     startTransition(() => {
       // update the URL, trigger a server‐render of your page,
       // but *without* a full browser refresh
-      router.replace(`/admin/schedule?${qs.toString()}`);
+      router.replace(`/teacher/schedules?${qs.toString()}`);
     });
   }
 
