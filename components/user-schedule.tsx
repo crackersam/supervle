@@ -8,6 +8,13 @@ import AddEventForm from "@/components/AddEventForm";
 import { rrulestr } from "rrule";
 import type { UserWithLessons } from "./types";
 import type { Lesson } from "@prisma/client";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
 
 interface CalendarEvent {
   id: string;
@@ -50,6 +57,7 @@ interface Props {
 
 export default function UserSchedule({ user }: Props) {
   const [open, setOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   return (
     <div className="mb-4 border rounded p-4">
       <div className="flex items-center justify-between">
@@ -85,8 +93,23 @@ export default function UserSchedule({ user }: Props) {
               <li>No lessons scheduled</li>
             )}
           </ul>
+          <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild>
+              <div className="flex justify-center">
+                <Button className=" w-52">Schedule lesson</Button>
+              </div>
+            </DialogTrigger>
+            <DialogContent
+              className="w-auto"
+              aria-describedby="modal to schedule a lecture"
+            >
+              <DialogHeader>
+                <DialogTitle>Schedule lesson</DialogTitle>
+              </DialogHeader>
 
-          <AddEventForm userId={user.id} />
+              <AddEventForm userId={user.id} />
+            </DialogContent>
+          </Dialog>
         </>
       )}
     </div>

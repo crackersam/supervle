@@ -15,17 +15,26 @@ const FREQUENCIES: Record<string, Frequency> = {
 /**
  * Server Action: Creates a new calendar event (single or recurring)
  */
-export async function createEvent(formData: FormData) {
-  const title = formData.get("title") as string;
-  const start = new Date(formData.get("start") as string);
-  const end = new Date(formData.get("end") as string);
-  const userId = formData.get("userId") as string;
-
+export async function createEvent({
+  title,
+  start,
+  end,
+  userId,
+  freq,
+  until,
+}: {
+  title: string;
+  start: Date;
+  end: Date;
+  userId: string;
+  freq?: string;
+  interval?: number;
+  until?: Date;
+}) {
   let rruleString: string | null = null;
-  const freq = (formData.get("freq") as string) || "";
-  const intervalRaw = formData.get("interval") as string;
-  const interval = intervalRaw ? parseInt(intervalRaw, 10) : 1;
-  const untilRaw = formData.get("until") as string;
+
+  const interval = 1;
+  const untilRaw = until;
 
   // Only build RRULE if a valid frequency is provided
   if (freq && FREQUENCIES[freq]) {
