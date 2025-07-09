@@ -44,7 +44,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { createEvent } from "@/app/(logged-in)/admin/schedule/actions";
+import { createEvent } from "@/app/(logged-in)/admin/lessons/actions";
 // Generate time slots every 30 minutes
 const TIME_SLOTS = Array.from({ length: 48 }, (_, i) => {
   const hh = String(Math.floor(i / 2)).padStart(2, "0");
@@ -52,7 +52,7 @@ const TIME_SLOTS = Array.from({ length: 48 }, (_, i) => {
   return `${hh}:${mm}`;
 });
 
-export default function AddEventForm({ userId }: { userId?: string }) {
+export default function AddEventForm() {
   const [openDialog, setOpenDialog] = useState(false);
   const [timeValue, setTimeValue] = useState(TIME_SLOTS[0]);
   const [timeValueEnd, setTimeValueEnd] = useState(TIME_SLOTS[0]);
@@ -62,7 +62,6 @@ export default function AddEventForm({ userId }: { userId?: string }) {
   const form = useForm<z.infer<typeof scheduleLessonSchema>>({
     resolver: zodResolver(scheduleLessonSchema),
     defaultValues: {
-      userId: userId || "",
       title: "",
       start: new Date(), // Default to now
       end: new Date(new Date().getTime() + 60 * 60 * 1000), // Default to one hour later
@@ -81,18 +80,6 @@ export default function AddEventForm({ userId }: { userId?: string }) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
-          control={form.control}
-          name="userId"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input type="hidden" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
         <FormField
           control={form.control}
           name="title"

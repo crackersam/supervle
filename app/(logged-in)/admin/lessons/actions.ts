@@ -2,6 +2,7 @@
 
 import { prisma } from "@/prisma-singleton";
 import { revalidatePath } from "next/cache";
+import { RRule, Options, Frequency } from "rrule";
 
 export const deleteLesson = async (lessonId: number) => {
   await prisma.enrollment.deleteMany({
@@ -38,3 +39,56 @@ export const enrolUser = async (formData: FormData) => {
     message: `User successfully enrolled in lesson ${lessonId}`,
   };
 };
+
+// Map string keys to RRule frequency constants
+const FREQUENCIES: Record<string, Frequency> = {
+  DAILY: RRule.DAILY,
+  WEEKLY: RRule.WEEKLY,
+  MONTHLY: RRule.MONTHLY,
+  YEARLY: RRule.YEARLY,
+};
+
+/**
+ * Server Action: Creates a new calendar event (single or recurring)
+ */
+export async function createEvent({
+  title,
+  start,
+  end,
+  freq,
+  until,
+}: {
+  title: string;
+  start: Date;
+  end: Date;
+  freq?: string;
+  interval?: number;
+  until?: Date;
+}) {
+  let rruleString: string | null = null;
+
+  const interval = 1;
+  const untilRaw = until;
+
+  // Only build RRULE if a valid frequency is provided
+  if (freq && FREQUENCIES[freq]) {
+    const options: Partial<Options> = {
+      freq: FREQUENCIES[freq],
+      interval,
+      dtstart: start,
+    };
+    if (untilRaw) options.until = new Date(untilRaw);
+    rruleString = new RRule(options as Options).toString();
+  }
+
+  // Persist to database
+  {
+    /*const lesson =*/
+  }
+  await prisma.lesson.create({
+    data: { title, start, end, rrule: rruleString },
+  });
+
+  // Revalidate the admin calendar page
+  revalidatePath("/admin");
+}

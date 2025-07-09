@@ -4,18 +4,10 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import Calendars from "@/components/calendars";
-import AddEventForm from "@/components/AddEventForm";
 import { rrulestr } from "rrule";
 import type { UserWithLessons } from "./types";
 import type { Lesson } from "@prisma/client";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "./ui/dialog";
-import { deleteLesson } from "@/app/(logged-in)/admin/schedule/actions";
+import { deleteEnrollment } from "@/app/(logged-in)/admin/schedule/actions";
 
 interface CalendarEvent {
   id: string;
@@ -58,7 +50,6 @@ interface Props {
 
 export default function UserSchedule({ user }: Props) {
   const [open, setOpen] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
   return (
     <div className="mb-4 border rounded p-4">
       <div className="flex items-center justify-between">
@@ -83,7 +74,7 @@ export default function UserSchedule({ user }: Props) {
               user.lessons.map((ev) => (
                 <li key={ev.lessonId}>
                   {ev.lesson.title}
-                  <form action={deleteLesson} className="inline ml-2">
+                  <form action={deleteEnrollment} className="inline ml-2">
                     <input type="hidden" name="lessonId" value={ev.lessonId} />
                     <input type="hidden" name="userId" value={user.id} />
                     <Button type="submit">Cancel</Button>
@@ -94,23 +85,6 @@ export default function UserSchedule({ user }: Props) {
               <li>No lessons scheduled</li>
             )}
           </ul>
-          <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger asChild>
-              <div className="flex justify-center">
-                <Button className=" w-52">Schedule lesson</Button>
-              </div>
-            </DialogTrigger>
-            <DialogContent
-              className="w-auto"
-              aria-describedby="modal to schedule a lecture"
-            >
-              <DialogHeader>
-                <DialogTitle>Schedule lesson</DialogTitle>
-              </DialogHeader>
-
-              <AddEventForm userId={user.id} />
-            </DialogContent>
-          </Dialog>
         </>
       )}
     </div>
