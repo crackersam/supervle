@@ -8,6 +8,7 @@ import { rrulestr } from "rrule";
 import type { UserWithLessons } from "./types";
 import type { Lesson } from "@prisma/client";
 import { deleteEnrollment } from "@/app/(logged-in)/admin/schedule/actions";
+import { Table, TableBody, TableCell, TableHeader, TableRow } from "./ui/table";
 
 interface CalendarEvent {
   id: string;
@@ -69,22 +70,40 @@ export default function UserSchedule({ user }: Props) {
             )}
           />
 
-          <ul className="list-disc pl-5 mt-2">
-            {user.lessons.length > 0 ? (
-              user.lessons.map((ev) => (
-                <li key={ev.lessonId}>
-                  {ev.lesson.title}
-                  <form action={deleteEnrollment} className="inline ml-2">
-                    <input type="hidden" name="lessonId" value={ev.lessonId} />
-                    <input type="hidden" name="userId" value={user.id} />
-                    <Button type="submit">Cancel</Button>
-                  </form>
-                </li>
-              ))
-            ) : (
-              <li>No lessons scheduled</li>
-            )}
-          </ul>
+          <Table className="mt-4">
+            <TableHeader>
+              <TableRow>
+                <TableCell>Lesson</TableCell>
+                <TableCell>Actions</TableCell>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {user.lessons.length > 0 ? (
+                user.lessons.map((ev) => (
+                  <TableRow key={ev.lessonId}>
+                    <TableCell>{ev.lesson.title}</TableCell>
+                    <TableCell>
+                      <form action={deleteEnrollment} className="inline ml-2">
+                        <input
+                          type="hidden"
+                          name="lessonId"
+                          value={ev.lessonId}
+                        />
+                        <input type="hidden" name="userId" value={user.id} />
+                        <Button type="submit" variant={"destructive"}>
+                          Unenrol
+                        </Button>
+                      </form>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={2}>No lessons scheduled</TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
         </>
       )}
     </div>

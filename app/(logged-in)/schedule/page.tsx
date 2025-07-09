@@ -26,6 +26,7 @@ export default async function CalendarPage() {
 
   // Determine list of students
   let studentList: StudentInfo[];
+
   if (session.user?.role === "ADMIN") {
     studentList = await prisma.user.findMany({
       where: { role: "STUDENT" },

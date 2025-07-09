@@ -15,6 +15,7 @@ export default async function AdminSchedule({ searchParams }: Props) {
     forename || surname
       ? await prisma.user.findMany({
           where: {
+            role: "STUDENT",
             AND: [
               { forename: { contains: forename, mode: "insensitive" } },
               { surname: { contains: surname, mode: "insensitive" } },
