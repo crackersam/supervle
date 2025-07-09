@@ -19,7 +19,7 @@ export async function createEvent({
   title,
   start,
   end,
-  userId,
+  // userId,
   freq,
   until,
 }: {
@@ -48,16 +48,38 @@ export async function createEvent({
   }
 
   // Persist to database
-  const lesson = await prisma.lesson.create({
+  {
+    /*const lesson =*/
+  }
+  await prisma.lesson.create({
     data: { title, start, end, rrule: rruleString },
   });
-  await prisma.enrollment.create({
-    data: {
-      userId,
-      lessonId: lesson.id,
-    },
-  });
+  // await prisma.enrollment.create({
+  //   data: {
+  //     userId,
+  //     lessonId: lesson.id,
+  //   },
+  // });
 
   // Revalidate the admin calendar page
   revalidatePath("/admin");
 }
+export const deleteLesson = async (formData: FormData) => {
+  const lessonId = parseInt(formData.get("lessonId") as string, 10);
+  const userId = formData.get("userId") as string;
+  await prisma.enrollment.deleteMany({
+    where: { lessonId, userId },
+  });
+  const enrollments = await prisma.enrollment.findMany({
+    where: { lessonId },
+  });
+  if (enrollments.length === 0) {
+    console.log("Deleting lesson with no enrollments:", lessonId);
+    await prisma.lesson.delete({
+      where: { id: lessonId },
+    });
+  }
+
+  // Revalidate the admin calendar page
+  revalidatePath("/admin");
+};

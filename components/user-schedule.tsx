@@ -15,6 +15,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
+import { deleteLesson } from "@/app/(logged-in)/admin/schedule/actions";
 
 interface CalendarEvent {
   id: string;
@@ -82,7 +83,7 @@ export default function UserSchedule({ user }: Props) {
               user.lessons.map((ev) => (
                 <li key={ev.lessonId}>
                   {ev.lesson.title}
-                  <form action={ev.deleteAction} className="inline ml-2">
+                  <form action={deleteLesson} className="inline ml-2">
                     <input type="hidden" name="lessonId" value={ev.lessonId} />
                     <input type="hidden" name="userId" value={user.id} />
                     <Button type="submit">Cancel</Button>
