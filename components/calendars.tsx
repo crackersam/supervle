@@ -43,7 +43,6 @@ export default function CalendarPage({ events }: { events: CalEvent[] }) {
           onClickWeekNumber={(_weekNumber, date) => setSelectedDate(date)}
           onChange={(date) => date instanceof Date && setSelectedDate(date)}
           value={selectedDate}
-          showWeekNumbers
         />
       </div>
 
