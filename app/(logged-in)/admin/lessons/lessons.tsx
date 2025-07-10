@@ -30,7 +30,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { deleteLesson, enrolUser } from "./actions";
+import { deleteEnrollment, deleteLesson, enrolUser } from "./actions";
 import { toast } from "sonner";
 
 interface Lesson {
@@ -124,12 +124,33 @@ const Lessons: React.FC<LessonsProps> = ({ lessons, users }) => {
                             (u) => u.id === enrollment.userId
                           );
                           return (
-                            <li key={enrollment.userId}>
+                            <li
+                              key={enrollment.userId}
+                              className="flex justify-between items-center"
+                            >
                               {user?.forename} {user?.surname} — Enrolled at{" "}
                               {format(
                                 new Date(enrollment.enrolledAt),
                                 "yyyy-MM-dd HH:mm"
                               )}
+                              <Button
+                                variant={"destructive"}
+                                onClick={async () => {
+                                  const res = await deleteEnrollment(
+                                    lesson.id.toString(),
+                                    enrollment.userId
+                                  );
+                                  if (res.success) {
+                                    toast.success(res.message);
+                                  } else {
+                                    toast.error(res.message);
+                                  }
+                                }}
+                                className="m-2"
+                                size={"sm"}
+                              >
+                                Unenroll
+                              </Button>
                             </li>
                           );
                         })}

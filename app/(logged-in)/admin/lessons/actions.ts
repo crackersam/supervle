@@ -84,9 +84,7 @@ export async function createEvent({
   }
 
   // Persist to database
-  {
-    /*const lesson =*/
-  }
+
   await prisma.lesson.create({
     data: { title, start, end, rrule: rruleString },
   });
@@ -94,3 +92,15 @@ export async function createEvent({
   // Revalidate the admin calendar page
   revalidatePath("/admin");
 }
+export const deleteEnrollment = async (lessonId: string, userId: string) => {
+  await prisma.enrollment.deleteMany({
+    where: { lessonId: Number(lessonId), userId },
+  });
+
+  // Revalidate the admin calendar page
+  revalidatePath("/admin/lessons");
+  return {
+    success: true,
+    message: `User with ID ${userId} unenrolled from lesson.`,
+  };
+};
