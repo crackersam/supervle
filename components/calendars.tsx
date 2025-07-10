@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import RecurringCalendar, { CalEvent } from "@/components/big-calendar";
-import ReactCalendar from "react-calendar";
+const ReactCalendar = dynamic(() => import("react-calendar"), { ssr: false });
 import {
   Dialog,
   DialogContent,
@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import "react-calendar/dist/Calendar.css";
+import dynamic from "next/dynamic";
 
 export default function CalendarPage({ events }: { events: CalEvent[] }) {
   // State for selected week date
@@ -57,7 +58,7 @@ export default function CalendarPage({ events }: { events: CalEvent[] }) {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{selectedEvent?.title}</DialogTitle>
-            <DialogDescription>
+            <DialogDescription asChild>
               {selectedEvent && (
                 <div className="space-y-2">
                   <p>
