@@ -1,40 +1,83 @@
 "use client";
 
 import { useState } from "react";
-import RecurringCalendar from "@/components/big-calendar";
+import RecurringCalendar, { CalEvent } from "@/components/big-calendar";
 import ReactCalendar from "react-calendar";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import "react-calendar/dist/Calendar.css";
 
-export default function CalendarPage({
-  events,
-}: {
-  events: {
-    id: number;
-    title: string;
-    start: string;
-    end: string;
-  }[];
-}) {
-  // Keep track of the currently‐selected date (we’ll treat it as the week anchor)
+export default function CalendarPage({ events }: { events: CalEvent[] }) {
+  // State for selected week date
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
-  return (
-    <div className="p-4 flex flex-col gap-4">
-      <RecurringCalendar events={events} date={selectedDate.toISOString()} />
+  // Dialog state and selected event
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<CalEvent | null>(null);
 
-      {/* Show week numbers, and when one’s clicked, switch to that week */}
-      <ReactCalendar
-        onClickWeekNumber={(_weekNumber, date) => setSelectedDate(date)}
-        showWeekNumbers
-        value={selectedDate}
-        onChange={(date) => {
-          if (date) {
-            if (date instanceof Date) {
-              setSelectedDate(date);
-            }
-          }
+  const handleSelectEvent = (event: CalEvent) => {
+    setSelectedEvent(event);
+    setIsOpen(true);
+  };
+
+  return (
+    <div className="p-4 flex flex-col gap-4 md:flex-row items-center justify-center">
+      <div className="md:flex-1">
+        <RecurringCalendar
+          events={events}
+          date={selectedDate.toISOString()}
+          onSelectEvent={handleSelectEvent}
+        />
+      </div>
+
+      <div className="space-y-4">
+        <ReactCalendar
+          onClickWeekNumber={(_weekNumber, date) => setSelectedDate(date)}
+          onChange={(date) => date instanceof Date && setSelectedDate(date)}
+          value={selectedDate}
+          showWeekNumbers
+        />
+      </div>
+
+      {/* Event Details Dialog */}
+      <Dialog
+        open={isOpen}
+        onOpenChange={(open) => {
+          setIsOpen(open);
+          if (!open) setSelectedEvent(null);
         }}
-      />
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{selectedEvent?.title}</DialogTitle>
+            <DialogDescription>
+              {selectedEvent && (
+                <div className="space-y-2">
+                  <p>
+                    <strong>Start:</strong>{" "}
+                    {selectedEvent.start.toLocaleString()}
+                  </p>
+                  <p>
+                    <strong>End:</strong> {selectedEvent.end.toLocaleString()}
+                  </p>
+                </div>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setIsOpen(false)}>
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

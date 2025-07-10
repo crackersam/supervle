@@ -11,8 +11,8 @@ import type { Lesson } from "@prisma/client";
 interface CalendarEvent {
   id: string;
   title: string;
-  start: string;
-  end: string;
+  start: Date;
+  end: Date;
 }
 
 function expandLessons(lessons: Lesson[]): CalendarEvent[] {
@@ -26,18 +26,18 @@ function expandLessons(lessons: Lesson[]): CalendarEvent[] {
       return rule.between(windowStart, windowEnd, true).map((dt) => ({
         id: lesson.id.toString(),
         title: lesson.title,
-        start: dt.toISOString(),
+        start: new Date(dt),
         end: new Date(
           dt.getTime() + (lesson.end.getTime() - lesson.start.getTime())
-        ).toISOString(),
+        ),
       }));
     }
     return [
       {
         id: lesson.id.toString(),
         title: lesson.title,
-        start: lesson.start.toISOString(),
-        end: lesson.end.toISOString(),
+        start: lesson.start,
+        end: lesson.end,
       },
     ];
   });

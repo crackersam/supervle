@@ -8,19 +8,21 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 moment.tz.setDefault("Europe/London");
 const localizer = momentLocalizer(moment);
 
-type Event = {
+export type CalEvent = {
   id: number;
   title: string;
-  start: string; // ISO
-  end: string; // ISO
+  start: Date;
+  end: Date;
 };
 
 export default function RecurringCalendar({
   events,
   date,
+  onSelectEvent,
 }: {
-  events: Event[];
+  events: CalEvent[];
   date: string;
+  onSelectEvent?: (event: CalEvent) => void;
 }) {
   // convert ISO strings to Date
   const evts = events.map((e) => ({
@@ -40,6 +42,7 @@ export default function RecurringCalendar({
         views={["work_week", "day"]}
         date={new Date(date)}
         style={{ height: "100%" }}
+        onSelectEvent={onSelectEvent}
       />
     </div>
   );
