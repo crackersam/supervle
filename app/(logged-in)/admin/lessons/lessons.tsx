@@ -33,34 +33,44 @@ import {
 import { deleteLesson, enrolUser } from "./actions";
 import { toast } from "sonner";
 
-const Lessons = ({
-  lessons,
-  users,
-}: {
-  lessons: ({
-    users: { userId: string; lessonId: number; enrolledAt: Date }[];
-  } & {
-    id: number;
-    createdAt: Date;
-    title: string;
-    start: Date;
-    end: Date;
-    rrule: string | null;
-  })[];
-  users: { id: string; forename: string; surname: string }[];
-}) => {
+interface Lesson {
+  id: number;
+  createdAt: Date;
+  title: string;
+  start: Date;
+  end: Date;
+  rrule: string | null;
+  users: { userId: string; lessonId: number; enrolledAt: Date }[];
+}
+
+interface User {
+  id: string;
+  forename: string;
+  surname: string;
+}
+
+interface LessonsProps {
+  lessons: Lesson[];
+  users: User[];
+}
+
+const Lessons: React.FC<LessonsProps> = ({ lessons, users }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Filter users by matching the search term against full name
   const filteredUsers = users.filter((user) => {
     const fullName = `${user.forename} ${user.surname}`.toLowerCase();
     return fullName.includes(searchTerm.toLowerCase());
   });
-  function getUntilDate(rruleString: string): Date | null {
-    const rule = RRule.fromString(rruleString);
-    // .options.until is already a JS Date (in UTC)
-    return rule.options.until ?? null;
-  }
+
+  const getUntilDate = (rruleString: string): Date | null => {
+    try {
+      const rule = RRule.fromString(rruleString);
+      return rule.options.until ?? null;
+    } catch {
+      return null;
+    }
+  };
+
   return (
     <div>
       <h1 className="text-2xl font-bold mb-4">Lessons</h1>
@@ -88,15 +98,47 @@ const Lessons = ({
                 {format(new Date(lesson.end), "yyyy-MM-dd HH:mm")}
               </TableCell>
               <TableCell className="px-4 py-2 border-b">
-                {format(
-                  getUntilDate(lesson.rrule ?? "") ?? new Date(),
-                  "yyyy-MM-dd HH:mm"
-                )}
+                {lesson.rrule
+                  ? format(
+                      getUntilDate(lesson.rrule) ?? new Date(),
+                      "yyyy-MM-dd HH:mm"
+                    )
+                  : "-"}
               </TableCell>
               <TableCell className="px-4 py-2 border-b">
-                {lesson.users.length > 0
-                  ? lesson.users.length + " users enrolled"
-                  : "No users enrolled"}
+                {lesson.users.length > 0 ? (
+                  <Dialog>
+                    <DialogTrigger className="hover:underline cursor-pointer">
+                      {lesson.users.length} user(s) enrolled
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Users Enrolled</DialogTitle>
+                        <DialogDescription>
+                          List of users enrolled in this lesson.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <ul className="list-disc pl-6">
+                        {lesson.users.map((enrollment) => {
+                          const user = users.find(
+                            (u) => u.id === enrollment.userId
+                          );
+                          return (
+                            <li key={enrollment.userId}>
+                              {user?.forename} {user?.surname} — Enrolled at{" "}
+                              {format(
+                                new Date(enrollment.enrolledAt),
+                                "yyyy-MM-dd HH:mm"
+                              )}
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </DialogContent>
+                  </Dialog>
+                ) : (
+                  "No users enrolled"
+                )}
               </TableCell>
               <TableCell className="px-4 py-2 border-b">
                 <AlertDialog>
@@ -111,21 +153,17 @@ const Lessons = ({
                         Are you absolutely sure?
                       </AlertDialogTitle>
                       <AlertDialogDescription>
-                        This action cannot be undone. This will permanently
-                        delete the lesson and remove the data from our servers.
+                        This action cannot be undone. It will permanently delete
+                        the lesson.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
                       <AlertDialogAction asChild>
                         <Button
-                          type="submit"
-                          variant={"destructive"}
-                          className=""
-                          onClick={(e) => {
-                            e.preventDefault();
-                            deleteLesson(lesson.id);
-                          }}
+                          type="button"
+                          variant="destructive"
+                          onClick={() => deleteLesson(lesson.id)}
                         >
                           Delete
                         </Button>
@@ -141,11 +179,9 @@ const Lessons = ({
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
-                      <DialogTitle>Are you absolutely sure?</DialogTitle>
+                      <DialogTitle>Enroll a User</DialogTitle>
                       <DialogDescription>
-                        This action cannot be undone. This will permanently
-                        delete your account and remove your data from our
-                        servers.
+                        Select a user to enroll in this lesson.
                       </DialogDescription>
                     </DialogHeader>
                     <form
@@ -159,14 +195,10 @@ const Lessons = ({
                       }}
                       className="space-y-4"
                     >
+                      <input type="hidden" name="lessonId" value={lesson.id} />
                       <div className="grid gap-4">
-                        <input
-                          type="hidden"
-                          name="lessonId"
-                          value={lesson.id}
-                        />
                         <label htmlFor="userSearch" className="block">
-                          Search User to Enroll:
+                          Search User:
                         </label>
                         <input
                           type="text"
@@ -176,7 +208,6 @@ const Lessons = ({
                           placeholder="Type forename or surname"
                           className="border rounded p-2 w-full"
                         />
-
                         <select
                           name="userId"
                           id="userId"
@@ -190,7 +221,6 @@ const Lessons = ({
                           ))}
                         </select>
                       </div>
-
                       <Button type="submit" className="w-full">
                         Enroll User
                       </Button>
