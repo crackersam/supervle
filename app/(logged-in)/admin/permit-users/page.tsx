@@ -28,6 +28,18 @@ const PermitUsersPage = async () => {
       role: true,
     },
   });
+  const deleteUser = async (formData: FormData) => {
+    "use server";
+    const userId = formData.get("userId");
+    if (typeof userId !== "string") {
+      throw new Error("Invalid user ID");
+    }
+    await prisma.user.delete({
+      where: { id: userId },
+    });
+    revalidatePath("/admin/permit-users");
+    return;
+  };
   const permitUser = async (formData: FormData) => {
     "use server";
     const userId = formData.get("userId");
@@ -86,7 +98,13 @@ const PermitUsersPage = async () => {
                   <input type="hidden" name="userId" value={user.id} />
                 </form>
               </TableCell>
-              <TableCell>
+              <TableCell className="flex items-center gap-2">
+                <form action={deleteUser} className="inline">
+                  <input type="hidden" name="userId" value={user.id} />
+                  <Button type="submit" size={"sm"} variant={"destructive"}>
+                    Delete
+                  </Button>
+                </form>
                 <Button type="submit" form={formId} size="sm">
                   Permit
                 </Button>
