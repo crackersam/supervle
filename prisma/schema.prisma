@@ -36,6 +36,8 @@ model User {
 
   guardians StudentGuardian[] @relation("StudentToGuardian")
   students  StudentGuardian[] @relation("GuardianToStudent")
+
+  Attendance Attendance[]
 }
 
 model Account {
@@ -97,6 +99,8 @@ model Lesson {
   end       DateTime
   rrule     String?
   users     Enrollment[] @relation("Enrollments_lesson")
+
+  Attendance Attendance[]
 }
 
 model Enrollment {
@@ -122,4 +126,17 @@ model StudentGuardian {
 
   @@id([studentId, guardianId])
   @@index([guardianId])
+}
+
+model Attendance {
+  id        Int      @id @default(autoincrement())
+  lesson    Lesson   @relation(fields: [lessonId], references: [id])
+  lessonId  Int
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  date      DateTime
+  present   Boolean
+  createdAt DateTime @default(now())
+
+  @@unique([lessonId, userId, date])
 }
