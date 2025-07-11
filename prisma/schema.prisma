@@ -22,6 +22,7 @@ model User {
   emailVerified DateTime?
   image         String?
   password      String
+  activated     DateTime?
   role          Role      @default(STUDENT)
   accounts      Account[]
   sessions      Session[]

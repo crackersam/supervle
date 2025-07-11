@@ -19,7 +19,7 @@ export default {
           },
         });
 
-        if (!user || !user.emailVerified) {
+        if (!user || !user.activated) {
           return null; // No user found with this email
         }
 
