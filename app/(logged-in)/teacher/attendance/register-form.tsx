@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { toast } from "sonner";
 
 type Role = "STUDENT" | "TEACHER" | "ADMIN" | "GUARDIAN";
 
@@ -12,15 +13,32 @@ type Event = {
 
 type Props = {
   events: Event[];
-  registerAttendance: (formData: FormData) => Promise<void>;
+  registerAttendance: (
+    formData: FormData
+  ) => Promise<{ success: boolean; message: string }>;
 };
 
 export default function RegisterForm({ events, registerAttendance }: Props) {
   const [selectedId, setSelectedId] = useState<string>(events[0]?.id || "");
   const selectedEvent = events.find((evt) => evt.id === selectedId)!;
+  const [taken, setTaken] = useState(false);
 
   return (
-    <form action={registerAttendance} className="space-y-4">
+    <form
+      onSubmit={async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        const result = await registerAttendance(formData);
+
+        if (result.success) {
+          toast.success(result.message);
+          setTaken(true);
+        } else {
+          alert(`Error: ${result.message}`);
+        }
+      }}
+      className="space-y-4"
+    >
       <div>
         <label htmlFor="event" className="block font-medium">
           Select today&apos;s class:
@@ -63,8 +81,9 @@ export default function RegisterForm({ events, registerAttendance }: Props) {
       <button
         type="submit"
         className="mt-4 px-4 py-2 rounded bg-blue-600 text-white"
+        disabled={taken}
       >
-        Submit Attendance
+        {taken ? "Attendance submitted" : "Submit attendance"}
       </button>
     </form>
   );
