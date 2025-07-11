@@ -29,7 +29,7 @@ export default function SearchForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex gap-2 mb-6">
+    <form onSubmit={onSubmit} className="flex flex-wrap gap-2 mb-6">
       <input
         name="forename"
         placeholder="Search forename"
