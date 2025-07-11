@@ -18,14 +18,34 @@ const MenuItems = async () => {
       )}
       {(session?.user?.role === "TEACHER" ||
         session?.user?.role === "ADMIN") && (
-        <Link href="/restricted/schedules" className="hover:underline">
-          Schedules
-        </Link>
+        <>
+          <Link href="/restricted/schedules" className="hover:underline">
+            Schedules
+          </Link>
+          <Link href={"/restricted/attendance"} className="hover:underline">
+            Attendance
+          </Link>
+        </>
       )}
       {(session?.user?.role === "TEACHER" ||
         session?.user?.role === "STUDENT") && (
         <Link href="/schedule" className="hover:underline">
-          My Schedule
+          Schedule
+        </Link>
+      )}
+      {session?.user?.role === "STUDENT" && (
+        <Link href="/attendance" className="hover:underline">
+          Attendance
+        </Link>
+      )}
+      {session?.user?.role === "GUARDIAN" && (
+        <Link href="/guardian/schedule" className="hover:underline">
+          My Child&apos;s Schedule
+        </Link>
+      )}
+      {session?.user?.role === "GUARDIAN" && (
+        <Link href="/guardian/attendance" className="hover:underline">
+          My Child&apos;s Attendance
         </Link>
       )}
     </div>

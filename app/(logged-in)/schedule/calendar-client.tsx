@@ -68,6 +68,8 @@ export default function CalendarClient({
             ...event,
             // If Calendars expects numeric IDs, parse here
             id: parseInt(event.id, 10),
+            start: new Date(event.start),
+            end: new Date(event.end),
           }))}
         />
       </div>

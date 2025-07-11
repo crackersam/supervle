@@ -97,8 +97,6 @@ export default async function CalendarPage() {
       orderBy: { start: "asc" },
     });
 
-    console.log(`Lessons for student ${stu.id}:`, lessons);
-
     calendarMap[stu.id] = {
       title:
         session.user?.role === "ADMIN" || session.user?.role === "GUARDIAN"
