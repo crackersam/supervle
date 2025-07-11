@@ -17,6 +17,7 @@ interface CalendarEvent {
 
 function expandLessons(lessons: Lesson[]): CalendarEvent[] {
   const windowStart = new Date();
+  windowStart.setMonth(windowStart.getMonth() - 1);
   const windowEnd = new Date();
   windowEnd.setMonth(windowEnd.getMonth() + 3);
 

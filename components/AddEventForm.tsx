@@ -328,7 +328,7 @@ export default function AddEventForm() {
           name="freq"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Lesson title</FormLabel>
+              <FormLabel>Repeat lesson</FormLabel>
               <FormControl>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <SelectTrigger className="w-full">

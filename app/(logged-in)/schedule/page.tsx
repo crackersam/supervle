@@ -61,6 +61,7 @@ export default async function CalendarPage() {
     }
   }
   const windowStart = new Date();
+  windowStart.setMonth(windowStart.getMonth() - 3);
   const windowEnd = new Date();
   windowEnd.setMonth(windowEnd.getMonth() + 3);
   // Prepare calendar map
