@@ -8,6 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { prisma } from "@/prisma-singleton";
+import { Role } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import React from "react";
 
@@ -30,12 +31,19 @@ const PermitUsersPage = async () => {
   const permitUser = async (formData: FormData) => {
     "use server";
     const userId = formData.get("userId");
+    const role = formData.get("role") as string;
+    if (
+      typeof role !== "string" ||
+      !["ADMIN", "GUARDIAN", "STUDENT", "TEACHER"].includes(role)
+    ) {
+      throw new Error("Invalid role");
+    }
     if (typeof userId !== "string") {
       throw new Error("Invalid user ID");
     }
     await prisma.user.update({
       where: { id: userId },
-      data: { activated: new Date() },
+      data: { activated: new Date(), role: role as Role },
     });
     revalidatePath("/admin/permit-users");
     return;
@@ -56,22 +64,36 @@ const PermitUsersPage = async () => {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {users.map((user) => (
-          <TableRow key={user.email}>
-            <TableCell>{user.forename}</TableCell>
-            <TableCell>{user.surname}</TableCell>
-            <TableCell>{user.email}</TableCell>
-            <TableCell>{user.role}</TableCell>
-            <TableCell>
-              <form action={permitUser}>
-                <input type="hidden" name="userId" value={user.id} />
-                <Button type="submit" size="sm">
+        {users.map((user) => {
+          const formId = `permit-user-${user.id}`;
+          return (
+            <TableRow key={user.id}>
+              <TableCell>{user.forename}</TableCell>
+              <TableCell>{user.surname}</TableCell>
+              <TableCell>{user.email}</TableCell>
+              <TableCell>
+                <form id={formId} action={permitUser}>
+                  <select
+                    name="role"
+                    defaultValue={user.role}
+                    className="border rounded p-2 w-full"
+                  >
+                    <option value="ADMIN">admin</option>
+                    <option value="GUARDIAN">guardian</option>
+                    <option value="STUDENT">student</option>
+                    <option value="TEACHER">teacher</option>
+                  </select>
+                  <input type="hidden" name="userId" value={user.id} />
+                </form>
+              </TableCell>
+              <TableCell>
+                <Button type="submit" form={formId} size="sm">
                   Permit
                 </Button>
-              </form>
-            </TableCell>
-          </TableRow>
-        ))}
+              </TableCell>
+            </TableRow>
+          );
+        })}
       </TableBody>
     </Table>
   );
