@@ -31,8 +31,9 @@ export default function ClientAttendance({
   const [attendance, setAttendance] = useState<AttendancePayload | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [autoLoaded, setAutoLoaded] = useState<boolean>(false);
 
-  // Live search for admin / teacher
+  /* ------------------------ SEARCH (Admin/Teacher) ------------------------ */
   useEffect(() => {
     let cancelled = false;
     if (allowSearch && search.length >= 3) {
@@ -51,13 +52,34 @@ export default function ClientAttendance({
     };
   }, [search, allowSearch, selectedId]);
 
-  // Ensure selectedId always valid when options change
+  /* ------------------------- OPTION SANITY CHECK ------------------------- */
   useEffect(() => {
     if (options.length && !options.find((o) => o.id === selectedId)) {
       setSelectedId(options[0].id);
     }
   }, [options, selectedId]);
 
+  /* ---------- Auto-load attendance when only one option (Student/Guardian) ---------- */
+  useEffect(() => {
+    if (!allowSearch && options.length === 1 && !autoLoaded) {
+      (async () => {
+        setLoading(true);
+        try {
+          const data = await getAttendanceData(options[0].id);
+          setAttendance(data);
+          setSelectedId(options[0].id);
+          setAutoLoaded(true);
+        } catch (e: unknown) {
+          console.error(e);
+          setError("Failed to load attendance");
+        } finally {
+          setLoading(false);
+        }
+      })();
+    }
+  }, [options, allowSearch, autoLoaded]);
+
+  /* ------------------------ Manual fetch (Admin/Teacher) ------------------------ */
   async function view(): Promise<void> {
     if (!selectedId) return;
     setLoading(true);
@@ -73,6 +95,7 @@ export default function ClientAttendance({
     }
   }
 
+  /* ------------------------------ RENDER ------------------------------ */
   return (
     <div className="space-y-4">
       {allowSearch && (
@@ -86,27 +109,35 @@ export default function ClientAttendance({
         />
       )}
 
-      <select
-        className="block w-full rounded border p-2"
-        value={selectedId}
-        onChange={(e: React.ChangeEvent<HTMLSelectElement>): void =>
-          setSelectedId(e.target.value)
-        }
-      >
-        {options.map((o: Option) => (
-          <option key={o.id} value={o.id}>
-            {o.label}
-          </option>
-        ))}
-      </select>
+      {/* If exactly one option (Student/Guardian), show as plain text */}
+      {options.length === 1 && !allowSearch ? (
+        <></>
+      ) : (
+        <select
+          className="block w-full rounded border p-2"
+          value={selectedId}
+          onChange={(e: React.ChangeEvent<HTMLSelectElement>): void =>
+            setSelectedId(e.target.value)
+          }
+        >
+          {options.map((o: Option) => (
+            <option key={o.id} value={o.id}>
+              {o.label}
+            </option>
+          ))}
+        </select>
+      )}
 
-      <button
-        onClick={view}
-        disabled={!selectedId}
-        className="px-4 py-2 rounded bg-blue-600 text-white"
-      >
-        View Attendance
-      </button>
+      {/* Show button only when search/select is required (Admin/Teacher) */}
+      {allowSearch && (
+        <button
+          onClick={view}
+          disabled={!selectedId}
+          className="px-4 py-2 rounded bg-blue-600 text-white"
+        >
+          View Attendance
+        </button>
+      )}
 
       {loading && <p>Loading…</p>}
       {error && <p className="text-red-600">{error}</p>}
@@ -114,7 +145,7 @@ export default function ClientAttendance({
       {attendance && (
         <div className="mt-6 space-y-4">
           <h2 className="text-xl font-semibold">
-            Attendance for {attendance.studentName}
+            Attendance (past 30 days) for {attendance.studentName}
           </h2>
           <p>
             Rate: {attendance.attendanceRate}% ({attendance.presentCount} of{" "}

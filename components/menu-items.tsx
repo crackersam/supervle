@@ -22,7 +22,10 @@ const MenuItems = async () => {
           <Link href="/restricted/schedules" className="hover:underline">
             Schedules
           </Link>
-          <Link href={"/restricted/attendance"} className="hover:underline">
+          <Link href={"/restricted/registers"} className="hover:underline">
+            Registers
+          </Link>
+          <Link href="/attendance" className="hover:underline">
             Attendance
           </Link>
         </>
@@ -39,14 +42,14 @@ const MenuItems = async () => {
         </Link>
       )}
       {session?.user?.role === "GUARDIAN" && (
-        <Link href="/guardian/schedule" className="hover:underline">
-          My Child&apos;s Schedule
-        </Link>
-      )}
-      {session?.user?.role === "GUARDIAN" && (
-        <Link href="/guardian/attendance" className="hover:underline">
-          My Child&apos;s Attendance
-        </Link>
+        <>
+          <Link href="/guardian/schedule" className="hover:underline">
+            Schedule
+          </Link>
+          <Link href="/attendance" className="hover:underline">
+            Attendance
+          </Link>
+        </>
       )}
     </div>
   );
