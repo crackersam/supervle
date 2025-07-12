@@ -1,118 +1,123 @@
-// app/students/[userId]/attendance/page.tsx
+// app/attendance/page.tsx
 import React from "react";
+import { redirect } from "next/navigation";
 import { prisma } from "@/prisma-singleton";
-import { format, subDays } from "date-fns";
-import { rrulestr } from "rrule";
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableRow,
-  TableHead,
-  TableCell,
-} from "@/components/ui/table";
 import { auth } from "@/auth";
 
-export default async function StudentAttendancePage() {
+import AttendanceViewer from "./attendance-viewer";
+
+// Server Action to handle student selection and redirect
+async function selectStudent(formData: FormData) {
+  "use server";
+  const userId = formData.get("userId");
+  if (typeof userId === "string") {
+    redirect(`/attendance?studentId=${encodeURIComponent(userId)}`);
+  }
+}
+
+export default async function AttendancePage(props: {
+  searchParams: Promise<{ studentId?: string; search?: string }>;
+}) {
+  // Await searchParams for Next.js 15
+  const { studentId, search: searchTerm = "" } = await props.searchParams;
   const session = await auth();
-  const userId = session?.user?.id;
-  if (!userId) return <p>Not authenticated.</p>;
+  if (!session) {
+    return <p>Not authenticated.</p>;
+  }
+  const role = session.user?.role;
 
-  // Fetch student info
-  const student = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { forename: true, surname: true, email: true },
-  });
-  if (!student) return <p>Student not found.</p>;
-
-  const now = new Date();
-  const windowStart = subDays(now, 30);
-
-  // Fetch all attendance records in the window (for any user) to know which sessions were taken
-  const attendanceAll = await prisma.attendance.findMany({
-    where: { date: { gte: windowStart, lte: now } },
-    select: { lessonId: true, date: true },
-  });
-  const takenSet = new Set(
-    attendanceAll.map((rec) => `${rec.lessonId}_${rec.date.toISOString()}`)
-  );
-
-  // Fetch this user's attendance records for presence
-  const userRecords = await prisma.attendance.findMany({
-    where: { userId, date: { gte: windowStart, lte: now } },
-    select: { lessonId: true, date: true, present: true },
-  });
-  const recordMap = new Map<string, boolean>();
-  userRecords.forEach((rec) => {
-    recordMap.set(`${rec.lessonId}_${rec.date.toISOString()}`, rec.present);
-  });
-
-  // Fetch enrolled lessons
-  const enrollments = await prisma.enrollment.findMany({
-    where: { userId },
-    include: { lesson: true },
-  });
-
-  // Expand occurrences and filter to only sessions with attendance taken
-  const sessions = enrollments.flatMap((enr) => {
-    const lesson = enr.lesson;
-    if (!lesson.rrule) return [];
-
-    const rule = rrulestr(lesson.rrule, { dtstart: lesson.start });
-    const dates = rule.between(windowStart, now, true);
-
-    return dates
-      .map((date) => ({
-        lessonId: lesson.id,
-        title: lesson.title,
-        date,
-        present: recordMap.get(`${lesson.id}_${date.toISOString()}`) ?? false,
-        key: `${lesson.id}_${date.toISOString()}`,
-      }))
-      .filter((sess) => takenSet.has(sess.key));
-  });
-
-  // Sort sessions by date descending
-  sessions.sort((a, b) => b.date.getTime() - a.date.getTime());
-
-  // Compute attendance rate
-  const total = sessions.length;
-  const presentCount = sessions.filter((s) => s.present).length;
-  const attendanceRate = total ? Math.round((presentCount / total) * 100) : 0;
+  // Preload options based on role and searchTerm
+  let options: { id: string; label: string }[] = [];
+  if (role === "STUDENT") {
+    const u = await prisma.user.findUnique({
+      where: { id: session.user?.id },
+      select: { id: true, forename: true, surname: true },
+    });
+    if (u) options = [{ id: u.id, label: `${u.forename} ${u.surname}` }];
+  } else if (role === "GUARDIAN") {
+    const g = await prisma.user.findUnique({
+      where: { id: session.user?.id },
+      include: {
+        students: {
+          include: {
+            student: { select: { id: true, forename: true, surname: true } },
+          },
+        },
+      },
+    });
+    options =
+      g?.students.map((s) => ({
+        id: s.student.id,
+        label: `${s.student.forename} ${s.student.surname}`,
+      })) || [];
+  } else if (role === "ADMIN" || role === "TEACHER") {
+    if (searchTerm.length >= 3) {
+      const users = await prisma.user.findMany({
+        where: {
+          role: "STUDENT",
+          OR: [
+            { forename: { contains: searchTerm, mode: "insensitive" } },
+            { surname: { contains: searchTerm, mode: "insensitive" } },
+          ],
+        },
+        select: { id: true, forename: true, surname: true },
+        take: 20,
+      });
+      options = users.map((u) => ({
+        id: u.id,
+        label: `${u.forename} ${u.surname}`,
+      }));
+    }
+  }
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">
-        Attendance (past 30 days) for {student.forename} {student.surname}
-      </h1>
-      <p className="mb-2">Email: {student.email}</p>
-      <p className="mb-6">
-        Attendance rate: <strong>{attendanceRate}%</strong> ({presentCount} of{" "}
-        {total})
-      </p>
+      <h1 className="text-2xl font-bold mb-4">View Attendance</h1>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Date</TableHead>
-            <TableHead>Start Time</TableHead>
-            <TableHead>Lesson</TableHead>
-            <TableHead>Present</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {sessions.map((sess) => (
-            <TableRow key={sess.key}>
-              <TableCell>{format(sess.date, "yyyy-MM-dd")}</TableCell>
-              <TableCell>{format(sess.date, "HH:mm")}</TableCell>
-              <TableCell>{sess.title}</TableCell>
-              <TableCell className="text-center">
-                {sess.present ? "✅" : "❌"}
-              </TableCell>
-            </TableRow>
+      {/* Search form for Admin/Teacher */}
+      {(role === "ADMIN" || role === "TEACHER") && (
+        <form method="get" className="flex space-x-2 mb-4">
+          <input
+            name="search"
+            defaultValue={searchTerm}
+            placeholder="Search students (min 3 chars)"
+            className="flex-1 rounded border p-2"
+          />
+          <button type="submit" className="px-4 py-2 rounded bg-gray-200">
+            Search
+          </button>
+        </form>
+      )}
+
+      {/* Selection form using server action */}
+      <form action={selectStudent} className="space-y-4 mb-6">
+        <select
+          name="userId"
+          defaultValue={options[0]?.id || ""}
+          className="block w-full rounded border p-2"
+        >
+          <option value="">Select a student</option>
+          {options.map((o) => (
+            <option key={o.id} value={o.id}>
+              {o.label}
+            </option>
           ))}
-        </TableBody>
-      </Table>
+        </select>
+        <button
+          type="submit"
+          className="mt-2 px-4 py-2 rounded bg-blue-600 text-white"
+          disabled={options.length === 0}
+        >
+          View Attendance
+        </button>
+      </form>
+
+      {/* Render attendance if a studentId is present */}
+      {studentId ? (
+        <AttendanceViewer userId={studentId} />
+      ) : (
+        <p>Select a student to view attendance.</p>
+      )}
     </div>
   );
 }
