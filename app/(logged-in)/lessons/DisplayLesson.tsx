@@ -1,9 +1,19 @@
-// /mnt/data/page.tsx
 "use client";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react"; // adjust for your auth
 import { motion } from "framer-motion";
 import { Trash2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
 import { getLessons, getOccurrences, getFiles, deleteFile } from "./actions";
 
 type Lesson = { id: number; title: string };
@@ -12,6 +22,11 @@ type FileRecord = { id: number; filename: string };
 
 export default function FilePage() {
   const { data: session } = useSession();
+  const canManage =
+    session?.user?.role === "TEACHER" || session?.user?.role === "ADMIN";
+  const isStudent =
+    session?.user?.role !== "TEACHER" && session?.user?.role !== "ADMIN";
+
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [occurrences, setOccurrences] = useState<Occurrence[]>([]);
   const [files, setFiles] = useState<FileRecord[]>([]);
@@ -55,7 +70,7 @@ export default function FilePage() {
     }
   };
 
-  // Delete handler without using 'any'
+  // Delete handler
   const handleDelete = async (fileId: number) => {
     if (!session) return;
     try {
@@ -77,6 +92,7 @@ export default function FilePage() {
         <h1 className="text-3xl font-extrabold text-gray-900 mb-8 text-center">
           Lesson & Occurrence Selector
         </h1>
+
         <form className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {/* Lesson Selector */}
           <div>
@@ -90,7 +106,7 @@ export default function FilePage() {
               id="lesson"
               className="block w-full py-3 px-4 border border-gray-300 bg-white rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
               onChange={handleLessonChange}
-              defaultValue=""
+              value={selectedLesson ?? ""}
             >
               <option value="" disabled>
                 -- Choose a lesson --
@@ -115,8 +131,8 @@ export default function FilePage() {
               id="occurrence"
               className="block w-full py-3 px-4 border border-gray-300 bg-white rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition disabled:opacity-50"
               onChange={handleOccurrenceChange}
+              value={selectedOccurrence ?? ""}
               disabled={!selectedLesson}
-              defaultValue=""
             >
               <option value="" disabled>
                 -- Choose an occurrence --
@@ -146,13 +162,17 @@ export default function FilePage() {
                 return (
                   <div
                     key={f.id}
-                    className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border border-gray-200 rounded-2xl hover:shadow-lg transition"
+                    className="flex flex-col sm:flex-row sm:gap-4 items-start sm:items-center p-4 border border-gray-200 rounded-2xl hover:shadow-lg transition"
                   >
                     {isVideo ? (
                       <video
                         controls
-                        className="w-full sm:w-1/2 h-auto rounded-lg"
                         src={`/uploads/${f.filename}`}
+                        className={`${
+                          isStudent
+                            ? "w-full h-auto"
+                            : "w-full sm:flex-1 sm:w-3/4 h-auto"
+                        } rounded-lg`}
                       >
                         Your browser does not support the video tag.
                       </video>
@@ -162,7 +182,7 @@ export default function FilePage() {
                       </span>
                     )}
 
-                    <div className="flex space-x-2">
+                    <div className="flex space-x-2 mt-3 sm:mt-0">
                       {!isVideo && (
                         <a
                           href={`/uploads/${f.filename}`}
@@ -173,18 +193,40 @@ export default function FilePage() {
                         </a>
                       )}
 
-                      {/* Delete button only for teachers */}
-                      {(session?.user?.role === "TEACHER" ||
-                        session?.user?.role === "ADMIN") && (
-                        <motion.button
-                          onClick={() => handleDelete(f.id)}
-                          initial={{ scale: 1 }}
-                          whileHover={{ scale: 1.05 }}
-                          className="inline-flex items-center px-4 py-2 rounded-2xl shadow-sm text-sm font-medium bg-red-600 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition"
-                        >
-                          <Trash2 className="w-4 h-4 mr-2" />
-                          Delete
-                        </motion.button>
+                      {canManage && (
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <motion.button
+                              initial={{ scale: 1 }}
+                              whileHover={{ scale: 1.05 }}
+                              className="inline-flex items-center px-4 py-2 rounded-2xl shadow-sm text-sm font-medium bg-red-600 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition"
+                            >
+                              <Trash2 className="w-4 h-4 mr-2" />
+                              Delete
+                            </motion.button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>
+                                Confirm Deletion
+                              </AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Are you sure you want to permanently delete this
+                                file?
+                                <br />
+                                This action cannot be undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleDelete(f.id)}
+                              >
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       )}
                     </div>
                   </div>
