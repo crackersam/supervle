@@ -24,6 +24,7 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
+    "framer-motion": "^12.23.3",
     "listbox": "^0.1.6",
     "lucide-react": "^0.525.0",
     "moment": "^2.30.1",
