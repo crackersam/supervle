@@ -34,13 +34,21 @@ const MenuItems = async () => {
           <Link href="/lessons" className="hover:underline">
             Lessons
           </Link>
+          <Link href="/restricted/upload-homework" className="hover:underline">
+            Assign Homework
+          </Link>
         </>
       )}
       {(session?.user?.role === "TEACHER" ||
         session?.user?.role === "STUDENT") && (
-        <Link href="/schedule" className="hover:underline">
-          Schedule
-        </Link>
+        <>
+          <Link href="/schedule" className="hover:underline">
+            Schedule
+          </Link>
+          <Link href="/homework" className="hover:underline">
+            Homework
+          </Link>
+        </>
       )}
       {session?.user?.role === "STUDENT" && (
         <>
@@ -54,7 +62,7 @@ const MenuItems = async () => {
       )}
       {session?.user?.role === "GUARDIAN" && (
         <>
-          <Link href="/guardian/schedule" className="hover:underline">
+          <Link href="/schedule" className="hover:underline">
             Schedule
           </Link>
           <Link href="/attendance" className="hover:underline">
@@ -62,6 +70,9 @@ const MenuItems = async () => {
           </Link>
           <Link href="/lessons" className="hover:underline">
             Lessons
+          </Link>
+          <Link href="/homework" className="hover:underline">
+            Homework
           </Link>
         </>
       )}

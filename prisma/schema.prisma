@@ -104,12 +104,13 @@ model Lesson {
 }
 
 model LessonOccurrence {
-  id       Int      @id @default(autoincrement())
-  lesson   Lesson   @relation(fields: [lessonId], references: [id])
+  id       Int        @id @default(autoincrement())
+  lesson   Lesson     @relation(fields: [lessonId], references: [id])
   lessonId Int
   start    DateTime
   end      DateTime
-  Files    File[]   @relation("Files_for_occurrence")
+  Files    File[]     @relation("Files_for_occurrence")
+  Homework Homework[]
 
   @@unique([lessonId, start])
 }
@@ -158,4 +159,13 @@ model Attendance {
   createdAt DateTime @default(now())
 
   @@unique([lessonId, userId, date])
+}
+
+model Homework {
+  id                 Int              @id @default(autoincrement())
+  filePath           String
+  dueDate            DateTime
+  lessonOccurrence   LessonOccurrence @relation(fields: [lessonOccurrenceId], references: [id])
+  lessonOccurrenceId Int
+  createdAt          DateTime         @default(now())
 }
