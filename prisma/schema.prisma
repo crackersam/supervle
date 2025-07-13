@@ -92,15 +92,34 @@ model passwordResetToken {
 }
 
 model Lesson {
-  id        Int          @id @default(autoincrement())
-  title     String
-  createdAt DateTime     @default(now())
-  start     DateTime
-  end       DateTime
-  rrule     String?
-  users     Enrollment[] @relation("Enrollments_lesson")
+  id          Int                @id @default(autoincrement())
+  title       String
+  createdAt   DateTime           @default(now())
+  start       DateTime
+  end         DateTime
+  rrule       String?
+  users       Enrollment[]       @relation("Enrollments_lesson")
+  occurrences LessonOccurrence[]
+  Attendance  Attendance[]
+}
 
-  Attendance Attendance[]
+model LessonOccurrence {
+  id       Int      @id @default(autoincrement())
+  lesson   Lesson   @relation(fields: [lessonId], references: [id])
+  lessonId Int
+  start    DateTime
+  end      DateTime
+  Files    File[]   @relation("Files_for_occurrence")
+
+  @@unique([lessonId, start])
+}
+
+model File {
+  id           Int              @id @default(autoincrement())
+  occurrence   LessonOccurrence @relation("Files_for_occurrence", fields: [occurrenceId], references: [id])
+  occurrenceId Int
+  filename     String
+  createdAt    DateTime         @default(now())
 }
 
 model Enrollment {
