@@ -11,6 +11,7 @@ export async function getOccurrences(lessonId: number) {
   return prisma.lessonOccurrence.findMany({
     where: { lessonId },
     select: { id: true, start: true },
+    orderBy: { start: "asc" },
   });
 }
 
