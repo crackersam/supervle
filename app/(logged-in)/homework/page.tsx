@@ -5,6 +5,28 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { format } from "date-fns";
 import { revalidatePath } from "next/cache";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Download, Trash2, BookOpen } from "lucide-react";
 
 export default async function HomeworkListPage() {
   const session = await auth();
@@ -56,51 +78,112 @@ export default async function HomeworkListPage() {
   });
 
   return (
-    <div className="max-w-2xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Assigned Homework</h1>
-      {homeworkItems.length === 0 ? (
-        <p className="text-gray-600">No homework assigned yet.</p>
-      ) : (
-        <ul className="space-y-4">
-          {homeworkItems.map((hw) => (
-            <li
-              key={hw.id}
-              className="border rounded-lg p-4 flex justify-between items-start bg-white shadow"
-            >
-              <div>
-                <h2 className="font-semibold text-lg text-gray-800">
-                  {hw.lessonOccurrence.lesson.title}
-                </h2>
-                <p className="text-sm text-gray-600">
-                  Assigned:{" "}
-                  {format(new Date(hw.lessonOccurrence.start), "dd/MM/yyyy")}
-                </p>
-                <p className="text-sm text-gray-600">
-                  Due: {format(new Date(hw.dueDate), "dd/MM/yyyy")}
-                </p>
-                <Link
-                  href={hw.filePath}
-                  target="_blank"
-                  className="mt-2 inline-block text-blue-600 hover:underline"
-                >
-                  Download Assignment
-                </Link>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-100 to-blue-200 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto space-y-8">
+        <Card className="shadow-lg rounded-2xl border border-gray-200">
+          <CardHeader>
+            <CardTitle className="text-2xl flex items-center justify-center">
+              <BookOpen className="mr-2 h-6 w-6 text-indigo-600" />
+              Assigned Homework
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {homeworkItems.length === 0 ? (
+              <p className="text-center text-gray-600">
+                No homework assigned yet.
+              </p>
+            ) : (
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-gray-50">
+                      <TableHead>Lesson</TableHead>
+                      <TableHead>Assigned</TableHead>
+                      <TableHead>Due</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {homeworkItems.map((hw) => (
+                      <TableRow
+                        key={hw.id}
+                        className="hover:bg-gray-50 transition-colors"
+                      >
+                        <TableCell className="font-medium">
+                          {hw.lessonOccurrence.lesson.title}
+                        </TableCell>
+                        <TableCell>
+                          {format(
+                            new Date(hw.lessonOccurrence.start),
+                            "dd/MM/yyyy"
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {format(new Date(hw.dueDate), "dd/MM/yyyy")}
+                        </TableCell>
+                        <TableCell className="flex items-center space-x-2">
+                          <Button
+                            variant="ghost"
+                            asChild
+                            className="hover:text-indigo-600"
+                          >
+                            <Link
+                              href={hw.filePath}
+                              target="_blank"
+                              className="flex items-center"
+                            >
+                              <Download className="h-4 w-4 mr-1" /> Download
+                            </Link>
+                          </Button>
+                          {(role === "TEACHER" || role === "ADMIN") && (
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button
+                                  variant="destructive"
+                                  size="sm"
+                                  className="hover:bg-red-700"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent className="rounded-xl">
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>
+                                    Confirm Deletion
+                                  </AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Are you sure you want to delete this
+                                    homework?
+                                    <br />
+                                    This action cannot be undone.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <form action={deleteHomework}>
+                                    <input
+                                      type="hidden"
+                                      name="homeworkId"
+                                      value={hw.id}
+                                    />
+                                    <AlertDialogAction type="submit">
+                                      Delete
+                                    </AlertDialogAction>
+                                  </form>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               </div>
-              {(role === "TEACHER" || role === "ADMIN") && (
-                <form action={deleteHomework} className="ml-4">
-                  <input type="hidden" name="homeworkId" value={hw.id} />
-                  <button
-                    type="submit"
-                    className="text-red-600 hover:text-red-800 text-sm font-medium"
-                  >
-                    Delete
-                  </button>
-                </form>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

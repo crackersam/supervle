@@ -10,8 +10,10 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Calendar as CalendarIcon } from "lucide-react";
 import "react-calendar/dist/Calendar.css";
 import dynamic from "next/dynamic";
 
@@ -20,37 +22,69 @@ export default function CalendarPage({ events }: { events: CalEvent[] }) {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   // Dialog state and selected event
-  const [isOpen, setIsOpen] = useState(false);
+  const [isEventOpen, setIsEventOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<CalEvent | null>(null);
+
+  // State for calendar dialog
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   const handleSelectEvent = (event: CalEvent) => {
     setSelectedEvent(event);
-    setIsOpen(true);
+    setIsEventOpen(true);
   };
 
   return (
-    <div className="p-4 flex flex-col gap-4 md:flex-row items-center justify-center">
-      <div className="md:flex-1">
-        <RecurringCalendar
-          events={events}
-          date={selectedDate.toISOString()}
-          onSelectEvent={handleSelectEvent}
-        />
-      </div>
-
-      <div className="space-y-4">
-        <ReactCalendar
-          onClickWeekNumber={(_weekNumber, date) => setSelectedDate(date)}
-          onChange={(date) => date instanceof Date && setSelectedDate(date)}
-          value={selectedDate}
-        />
-      </div>
+    <div>
+      <Dialog open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+        <DialogTrigger asChild>
+          <Button
+            variant="outline"
+            className="rounded-lg mb-4 border-indigo-300 hover:bg-indigo-50 transition-colors"
+          >
+            <CalendarIcon className="mr-2 h-4 w-4" />
+            Select Date
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Select Date</DialogTitle>
+            <DialogDescription>
+              Choose a date to view the schedule.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-center">
+            <ReactCalendar
+              onClickWeekNumber={(_weekNumber, date) => {
+                setSelectedDate(date);
+                setIsCalendarOpen(false);
+              }}
+              onChange={(date) => {
+                if (date instanceof Date) {
+                  setSelectedDate(date);
+                  setIsCalendarOpen(false);
+                }
+              }}
+              value={selectedDate}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setIsCalendarOpen(false)}>
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <RecurringCalendar
+        events={events}
+        date={selectedDate.toISOString()}
+        onSelectEvent={handleSelectEvent}
+      />
 
       {/* Event Details Dialog */}
       <Dialog
-        open={isOpen}
+        open={isEventOpen}
         onOpenChange={(open) => {
-          setIsOpen(open);
+          setIsEventOpen(open);
           if (!open) setSelectedEvent(null);
         }}
       >
@@ -72,7 +106,7 @@ export default function CalendarPage({ events }: { events: CalEvent[] }) {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="ghost" onClick={() => setIsOpen(false)}>
+            <Button variant="ghost" onClick={() => setIsEventOpen(false)}>
               Close
             </Button>
           </DialogFooter>
