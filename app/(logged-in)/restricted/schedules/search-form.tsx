@@ -2,6 +2,11 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTransition } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Search } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function SearchForm() {
   const router = useRouter();
@@ -29,26 +34,52 @@ export default function SearchForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-wrap gap-2 mb-6">
-      <input
-        name="forename"
-        placeholder="Search forename"
-        defaultValue={forename}
-        className="flex-1 border px-3 py-2 rounded"
-      />
-      <input
-        name="surname"
-        placeholder="Search surname"
-        defaultValue={surname}
-        className="flex-1 border px-3 py-2 rounded"
-      />
-      <button
-        type="submit"
-        disabled={isPending}
-        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
-      >
-        {isPending ? "Searching…" : "Search"}
-      </button>
-    </form>
+    <Card className="max-w-lg mx-auto shadow-lg rounded-2xl border border-gray-200 mb-6">
+      <CardHeader>
+        <CardTitle className="text-xl flex items-center justify-center">
+          <Search className="mr-2 h-5 w-5 text-indigo-600" />
+          Search Users
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form
+          onSubmit={onSubmit}
+          className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end"
+        >
+          <div className="space-y-2">
+            <Label htmlFor="forename" className="text-gray-700 font-medium">
+              Forename
+            </Label>
+            <Input
+              id="forename"
+              name="forename"
+              placeholder="Search forename"
+              defaultValue={forename}
+              className="rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="surname" className="text-gray-700 font-medium">
+              Surname
+            </Label>
+            <Input
+              id="surname"
+              name="surname"
+              placeholder="Search surname"
+              defaultValue={surname}
+              className="rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+            />
+          </div>
+          <Button
+            type="submit"
+            disabled={isPending}
+            className="w-full md:w-auto px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center justify-center"
+          >
+            <Search className="mr-2 h-4 w-4" />
+            {isPending ? "Searching…" : "Search"}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
   );
 }
