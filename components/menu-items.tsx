@@ -2,80 +2,123 @@ import { auth } from "@/auth";
 import Link from "next/link";
 import React from "react";
 
+interface MenuItem {
+  path: string;
+  label: string;
+  roles: string[];
+  category: string;
+}
+
+const menuItems: MenuItem[] = [
+  {
+    path: "/admin/lessons",
+    label: "Lessons",
+    roles: ["ADMIN"],
+    category: "Admin Tools",
+  },
+  {
+    path: "/admin/permit-users",
+    label: "Permit Users",
+    roles: ["ADMIN"],
+    category: "Admin Tools",
+  },
+  {
+    path: "/restricted/schedules",
+    label: "Schedules",
+    roles: ["TEACHER", "ADMIN"],
+    category: "Teaching Tools",
+  },
+  {
+    path: "/restricted/registers",
+    label: "Registers",
+    roles: ["TEACHER", "ADMIN"],
+    category: "Teaching Tools",
+  },
+  {
+    path: "/attendance",
+    label: "Attendance",
+    roles: ["TEACHER", "ADMIN"],
+    category: "Teaching Tools",
+  },
+  {
+    path: "/restricted/upload",
+    label: "Upload Content",
+    roles: ["TEACHER", "ADMIN"],
+    category: "Teaching Tools",
+  },
+  {
+    path: "/lessons",
+    label: "Lessons",
+    roles: ["TEACHER", "ADMIN"],
+    category: "Teaching Tools",
+  },
+  {
+    path: "/restricted/upload-homework",
+    label: "Assign Homework",
+    roles: ["TEACHER", "ADMIN"],
+    category: "Teaching Tools",
+  },
+  {
+    path: "/schedule",
+    label: "Schedule",
+    roles: ["TEACHER", "STUDENT", "GUARDIAN"],
+    category: "Personal Tools",
+  },
+  {
+    path: "/homework",
+    label: "Homework",
+    roles: ["TEACHER", "STUDENT", "GUARDIAN"],
+    category: "Personal Tools",
+  },
+  {
+    path: "/attendance",
+    label: "Attendance",
+    roles: ["STUDENT", "GUARDIAN"],
+    category: "Personal Tools",
+  },
+  {
+    path: "/lessons",
+    label: "Lessons",
+    roles: ["STUDENT", "GUARDIAN"],
+    category: "Personal Tools",
+  },
+];
+
 const MenuItems = async () => {
   const session = await auth();
+  const role = session?.user?.role;
+
+  const filteredItems = menuItems.filter(
+    (item) => role && item.roles.includes(role)
+  );
+
+  const groupedItems = filteredItems.reduce(
+    (acc: Record<string, MenuItem[]>, item) => {
+      if (!acc[item.category]) acc[item.category] = [];
+      acc[item.category].push(item);
+      return acc;
+    },
+    {}
+  );
+
   return (
-    <div className="flex flex-col gap-2 px-4">
-      {session?.user?.role === "ADMIN" && (
-        <>
-          <Link href="/admin/lessons" className="hover:underline">
-            Lessons
-          </Link>
-          <Link href="/admin/permit-users" className="hover:underline">
-            Permit Users
-          </Link>
-        </>
-      )}
-      {(session?.user?.role === "TEACHER" ||
-        session?.user?.role === "ADMIN") && (
-        <>
-          <Link href="/restricted/schedules" className="hover:underline">
-            Schedules
-          </Link>
-          <Link href={"/restricted/registers"} className="hover:underline">
-            Registers
-          </Link>
-          <Link href="/attendance" className="hover:underline">
-            Attendance
-          </Link>
-          <Link href="/restricted/upload" className="hover:underline">
-            Upload Content
-          </Link>
-          <Link href="/lessons" className="hover:underline">
-            Lessons
-          </Link>
-          <Link href="/restricted/upload-homework" className="hover:underline">
-            Assign Homework
-          </Link>
-        </>
-      )}
-      {(session?.user?.role === "TEACHER" ||
-        session?.user?.role === "STUDENT") && (
-        <>
-          <Link href="/schedule" className="hover:underline">
-            Schedule
-          </Link>
-          <Link href="/homework" className="hover:underline">
-            Homework
-          </Link>
-        </>
-      )}
-      {session?.user?.role === "STUDENT" && (
-        <>
-          <Link href="/attendance" className="hover:underline">
-            Attendance
-          </Link>
-          <Link href="/lessons" className="hover:underline">
-            Lessons
-          </Link>
-        </>
-      )}
-      {session?.user?.role === "GUARDIAN" && (
-        <>
-          <Link href="/schedule" className="hover:underline">
-            Schedule
-          </Link>
-          <Link href="/attendance" className="hover:underline">
-            Attendance
-          </Link>
-          <Link href="/lessons" className="hover:underline">
-            Lessons
-          </Link>
-          <Link href="/homework" className="hover:underline">
-            Homework
-          </Link>
-        </>
-      )}
+    <div className="flex flex-col gap-4 px-4">
+      {Object.entries(groupedItems).map(([category, items]) => (
+        <div key={category}>
+          <h3 className="font-semibold text-lg mb-2">{category}</h3>
+          <div className="flex flex-col gap-2">
+            {items.map((item) => (
+              <Link
+                key={item.path}
+                href={item.path}
+                className="hover:underline"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      ))}
     </div>
   );
 };

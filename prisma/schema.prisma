@@ -109,8 +109,8 @@ model LessonOccurrence {
   lessonId Int
   start    DateTime
   end      DateTime
-  Files    File[]     @relation("Files_for_occurrence")
-  Homework Homework[]
+  files    File[]     @relation("Files_for_occurrence")
+  homework Homework[]
 
   @@unique([lessonId, start])
 }

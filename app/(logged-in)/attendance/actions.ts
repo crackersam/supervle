@@ -44,7 +44,9 @@ export async function searchStudents(search: string): Promise<Option[]> {
 export async function getAttendanceData(
   userId: string
 ): Promise<AttendancePayload> {
+  // now === tomorrow
   const now = new Date();
+  now.setDate(now.getDate() + 1); // Move to next day
   const windowStart = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
   const student = await prisma.user.findUnique({
