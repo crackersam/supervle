@@ -166,36 +166,38 @@ const LessonDetailsPage = async ({ params }: Params) => {
 
         {/* Tabs for Sections */}
         <Tabs defaultValue="occurrences" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-4 bg-white rounded-xl shadow-md p-1">
-            <TabsTrigger
-              value="occurrences"
-              className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white"
-            >
-              <Calendar className="mr-2 h-4 w-4" />
-              Occurrences
-            </TabsTrigger>
-            <TabsTrigger
-              value="files"
-              className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white"
-            >
-              <FileText className="mr-2 h-4 w-4" />
-              Files
-            </TabsTrigger>
-            <TabsTrigger
-              value="homework"
-              className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white"
-            >
-              <BookOpen className="mr-2 h-4 w-4" />
-              Homework
-            </TabsTrigger>
-            <TabsTrigger
-              value="enrolled"
-              className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white"
-            >
-              <Users className="mr-2 h-4 w-4" />
-              Enrolled Users
-            </TabsTrigger>
-          </TabsList>
+          <Card className="shadow-md rounded-xl border border-gray-200 p-2 flex justify-center flex-wrap gap-2">
+            <TabsList className="bg-transparent p-0 flex-wrap h-auto">
+              <TabsTrigger
+                value="occurrences"
+                className="flex-shrink-0 rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white px-4 py-2"
+              >
+                <Calendar className="mr-2 h-4 w-4" />
+                Occurrences
+              </TabsTrigger>
+              <TabsTrigger
+                value="files"
+                className="flex-shrink-0 rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white px-4 py-2"
+              >
+                <FileText className="mr-2 h-4 w-4" />
+                Files
+              </TabsTrigger>
+              <TabsTrigger
+                value="homework"
+                className="flex-shrink-0 rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white px-4 py-2"
+              >
+                <BookOpen className="mr-2 h-4 w-4" />
+                Homework
+              </TabsTrigger>
+              <TabsTrigger
+                value="enrolled"
+                className="flex-shrink-0 rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white px-4 py-2"
+              >
+                <Users className="mr-2 h-4 w-4" />
+                Enrolled Users
+              </TabsTrigger>
+            </TabsList>
+          </Card>
 
           {/* Occurrences Tab */}
           <TabsContent value="occurrences">
