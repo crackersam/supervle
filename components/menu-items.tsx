@@ -3,6 +3,9 @@
 import Link from "next/link";
 import React from "react";
 import { useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
+import { Button } from "@/components/ui/button";
+import { LogOut } from "lucide-react";
 
 interface MenuItem {
   path: string;
@@ -113,23 +116,35 @@ const MenuItems = () => {
   );
 
   return (
-    <div className="flex flex-col gap-4 px-4">
-      {Object.entries(groupedItems).map(([category, items]) => (
-        <div key={category}>
-          <h3 className="font-semibold text-lg mb-2">{category}</h3>
-          <div className="flex flex-col gap-2">
-            {items.map((item) => (
-              <Link
-                key={item.path}
-                href={item.path}
-                className="hover:underline"
-              >
-                {item.label}
-              </Link>
-            ))}
+    <div className="flex flex-col gap-4 px-4 h-full">
+      <div className="flex-grow">
+        {Object.entries(groupedItems).map(([category, items]) => (
+          <div key={category}>
+            <h3 className="font-semibold text-lg mb-2">{category}</h3>
+            <div className="flex flex-col gap-2">
+              {items.map((item) => (
+                <Link
+                  key={item.path}
+                  href={item.path}
+                  className="hover:underline"
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
+
+      {/* Logout Button at Bottom */}
+      <Button
+        variant="destructive"
+        className="w-full mt-auto bg-red-600 hover:bg-red-700 flex items-center justify-center"
+        onClick={() => signOut({ callbackUrl: "/login" })}
+      >
+        <LogOut className="mr-2 h-4 w-4" />
+        Log Out
+      </Button>
     </div>
   );
 };

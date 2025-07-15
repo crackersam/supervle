@@ -82,9 +82,21 @@ export default async function UploadPage() {
     },
   });
 
+  // Filter occurrences to weekdays (Mon-Fri) and today or future
+  const filteredLessons = lessons.map((lesson) => ({
+    ...lesson,
+    occurrences: lesson.occurrences.filter((occ) => {
+      const occDate = new Date(occ.start);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Start of today
+      const dayOfWeek = occDate.getDay();
+      return occDate >= today && dayOfWeek >= 1 && dayOfWeek <= 5;
+    }),
+  }));
+
   return (
     <SessionProvider session={session}>
-      <UploadUI lessons={lessons} />
+      <UploadUI lessons={filteredLessons} />
     </SessionProvider>
   );
 }

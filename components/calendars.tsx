@@ -35,45 +35,47 @@ export default function CalendarPage({ events }: { events: CalEvent[] }) {
 
   return (
     <div>
-      <Dialog open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
-        <DialogTrigger asChild>
-          <Button
-            variant="outline"
-            className="rounded-lg mb-4 border-indigo-300 hover:bg-indigo-50 transition-colors"
-          >
-            <CalendarIcon className="mr-2 h-4 w-4" />
-            Select Date
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Select Date</DialogTitle>
-            <DialogDescription>
-              Choose a date to view the schedule.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex justify-center">
-            <ReactCalendar
-              onClickWeekNumber={(_weekNumber, date) => {
-                setSelectedDate(date);
-                setIsCalendarOpen(false);
-              }}
-              onChange={(date) => {
-                if (date instanceof Date) {
+      <div className="flex justify-center mb-4">
+        <Dialog open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+          <DialogTrigger asChild>
+            <Button
+              variant="outline"
+              className="rounded-lg border-indigo-300 hover:bg-indigo-50 transition-colors"
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              Select Date
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Select Date</DialogTitle>
+              <DialogDescription>
+                Choose a date to view the schedule.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex justify-center">
+              <ReactCalendar
+                onClickWeekNumber={(_weekNumber, date) => {
                   setSelectedDate(date);
                   setIsCalendarOpen(false);
-                }
-              }}
-              value={selectedDate}
-            />
-          </div>
-          <DialogFooter>
-            <Button variant="ghost" onClick={() => setIsCalendarOpen(false)}>
-              Close
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+                }}
+                onChange={(date) => {
+                  if (date instanceof Date) {
+                    setSelectedDate(date);
+                    setIsCalendarOpen(false);
+                  }
+                }}
+                value={selectedDate}
+              />
+            </div>
+            <DialogFooter>
+              <Button variant="ghost" onClick={() => setIsCalendarOpen(false)}>
+                Close
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
       <RecurringCalendar
         events={events}
         date={selectedDate.toISOString()}

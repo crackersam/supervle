@@ -60,8 +60,16 @@ export default function FilePage() {
     setFiles([]);
     if (lessonId) {
       const occs = await getOccurrences(lessonId);
+      // Filter to weekdays only (Monday=1 to Friday=5) and today or future
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Start of today
+      const filteredOccs = occs.filter((o) => {
+        const occDate = new Date(o.start);
+        const day = occDate.getDay();
+        return occDate >= today && day >= 1 && day <= 5;
+      });
       setOccurrences(
-        occs.map((o) => ({ id: o.id, start: o.start.toISOString() }))
+        filteredOccs.map((o) => ({ id: o.id, start: o.start.toISOString() }))
       );
     }
   };
