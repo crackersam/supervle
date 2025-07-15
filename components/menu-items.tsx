@@ -1,6 +1,8 @@
-import { auth } from "@/auth";
+"use client";
+
 import Link from "next/link";
 import React from "react";
+import { useSession } from "next-auth/react";
 
 interface MenuItem {
   path: string;
@@ -84,13 +86,22 @@ const menuItems: MenuItem[] = [
   },
 ];
 
-const MenuItems = async () => {
-  const session = await auth();
+const MenuItems = () => {
+  const { data: session, status } = useSession();
+
+  if (status === "loading") {
+    return <div className="text-center text-gray-600">Loading menu...</div>;
+  }
+
   const role = session?.user?.role;
 
-  const filteredItems = menuItems.filter(
-    (item) => role && item.roles.includes(role)
-  );
+  if (!role) {
+    return (
+      <div className="text-center text-gray-600">No menu items available.</div>
+    );
+  }
+
+  const filteredItems = menuItems.filter((item) => item.roles.includes(role));
 
   const groupedItems = filteredItems.reduce(
     (acc: Record<string, MenuItem[]>, item) => {

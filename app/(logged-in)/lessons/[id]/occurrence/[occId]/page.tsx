@@ -139,17 +139,17 @@ const OccurrenceDetailsPage = async ({ params }: Params) => {
 
         {/* Occurrence Header */}
         <Card className="overflow-hidden shadow-xl rounded-2xl border border-indigo-200">
-          <CardHeader className="p-8">
-            <CardTitle className="text-4xl font-bold text-gray-900">
-              {occurrence.lesson.title} - Occurrence
+          <CardHeader className="p-3">
+            <CardTitle className="text-4xl pl-3 font-bold text-gray-900">
+              {occurrence.lesson.title} - Lesson
             </CardTitle>
-            <CardDescription className="text-gray-900 text-lg mt-2">
+            <CardDescription className="text-gray-900 pl-3 text-lg mt-2">
               Date: {format(new Date(occurrence.start), "MMMM d, yyyy")} | Time:{" "}
               {format(new Date(occurrence.start), "h:mm a")} -{" "}
               {format(new Date(occurrence.end), "h:mm a")}
             </CardDescription>
           </CardHeader>
-          <CardContent className="pt-6 text-gray-700">
+          <CardContent className="text-gray-700">
             <p>
               View files, homework, and enrolled users for this specific
               occurrence.
