@@ -139,8 +139,8 @@ const LessonDetailsPage = async ({ params }: Params) => {
           asChild
           className="mb-4 hover:bg-indigo-100 transition-colors"
         >
-          <Link href="/lessons">
-            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Lessons
+          <Link href="/">
+            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Dashboard
           </Link>
         </Button>
 
