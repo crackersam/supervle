@@ -1,4 +1,3 @@
-// /mnt/data/actions.ts
 "use server";
 
 import { prisma } from "@/prisma-singleton";
@@ -110,4 +109,47 @@ export async function deleteFile(fileId: number) {
 
   // Delete the DB record
   await prisma.file.delete({ where: { id: fileId } });
+}
+
+export async function getStudentsForGuardian(): Promise<
+  { id: string; name: string }[]
+> {
+  const session = await auth();
+  const userId = session?.user?.id;
+  if (!userId || session?.user?.role !== "GUARDIAN")
+    throw new Error("Unauthorized");
+
+  const relations = await prisma.studentGuardian.findMany({
+    where: { guardianId: userId },
+    include: {
+      student: { select: { id: true, forename: true, surname: true } },
+    },
+  });
+
+  return relations.map((r) => ({
+    id: r.student.id,
+    name: `${r.student.forename} ${r.student.surname}`,
+  }));
+}
+
+export async function getLessonsForStudent(
+  studentId: string
+): Promise<{ id: number; title: string }[]> {
+  const session = await auth();
+  const userId = session?.user?.id;
+  if (!userId || session?.user?.role !== "GUARDIAN")
+    throw new Error("Unauthorized");
+
+  // Check relation
+  const relation = await prisma.studentGuardian.findUnique({
+    where: { studentId_guardianId: { studentId, guardianId: userId } },
+  });
+  if (!relation) throw new Error("Unauthorized");
+
+  const lessons = await prisma.lesson.findMany({
+    where: { users: { some: { userId: studentId } } },
+    select: { id: true, title: true },
+  });
+
+  return lessons;
 }

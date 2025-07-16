@@ -15,7 +15,14 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
-import { getLessons, getOccurrences, getFiles, deleteFile } from "./actions";
+import {
+  getLessons,
+  getOccurrences,
+  getFiles,
+  deleteFile,
+  getStudentsForGuardian,
+  getLessonsForStudent,
+} from "./actions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import {
@@ -27,16 +34,28 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 
-type Lesson = { id: number; title: string };
-type Occurrence = { id: number; start: string };
-type FileRecord = { id: number; filename: string };
+interface Lesson {
+  id: number;
+  title: string;
+}
+interface Occurrence {
+  id: number;
+  start: string;
+}
+interface FileRecord {
+  id: number;
+  filename: string;
+}
+interface Student {
+  id: string;
+  name: string;
+}
 
 export default function FilePage() {
   const { data: session } = useSession();
-  const canManage =
-    session?.user?.role === "TEACHER" || session?.user?.role === "ADMIN";
-  const isStudent =
-    session?.user?.role !== "TEACHER" && session?.user?.role !== "ADMIN";
+  const role = session?.user?.role;
+  const canManage = role === "TEACHER" || role === "ADMIN";
+  const isViewer = role === "STUDENT" || role === "GUARDIAN";
 
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [occurrences, setOccurrences] = useState<Occurrence[]>([]);
@@ -45,11 +64,39 @@ export default function FilePage() {
   const [selectedOccurrence, setSelectedOccurrence] = useState<number | null>(
     null
   );
+  const [students, setStudents] = useState<Student[]>([]);
+  const [selectedStudent, setSelectedStudent] = useState<string | null>(null);
 
-  // Fetch lessons once
+  // Fetch initial data
   useEffect(() => {
-    getLessons().then(setLessons);
-  }, []);
+    if (role === "GUARDIAN") {
+      getStudentsForGuardian().then((stus: Student[]) => {
+        setStudents(stus);
+        if (stus.length === 1) {
+          setSelectedStudent(stus[0].id);
+        }
+      });
+    } else if (role) {
+      getLessons().then(setLessons);
+    }
+  }, [role]);
+
+  // Fetch lessons when student changes (for guardians)
+  useEffect(() => {
+    if (role === "GUARDIAN" && selectedStudent) {
+      getLessonsForStudent(selectedStudent).then(setLessons);
+    }
+  }, [selectedStudent, role]);
+
+  // Handle student change
+  const handleStudentChange = (value: string) => {
+    setSelectedStudent(value);
+    setSelectedLesson(null);
+    setSelectedOccurrence(null);
+    setOccurrences([]);
+    setFiles([]);
+    setLessons([]); // Clear lessons until new fetch
+  };
 
   // Handle lesson change
   const handleLessonChange = async (value: string) => {
@@ -112,6 +159,31 @@ export default function FilePage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
+            {role === "GUARDIAN" && (
+              <div className="space-y-2">
+                <Label htmlFor="student" className="text-gray-700 font-medium">
+                  Select Student
+                </Label>
+                <Select
+                  value={selectedStudent ?? ""}
+                  onValueChange={handleStudentChange}
+                >
+                  <SelectTrigger
+                    id="student"
+                    className="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                  >
+                    <SelectValue placeholder="-- Choose a student --" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {students.map((s) => (
+                      <SelectItem key={s.id} value={s.id}>
+                        {s.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="lesson" className="text-gray-700 font-medium">
                 Select Lesson
@@ -119,10 +191,11 @@ export default function FilePage() {
               <Select
                 value={selectedLesson?.toString() ?? ""}
                 onValueChange={handleLessonChange}
+                disabled={role === "GUARDIAN" && !selectedStudent}
               >
                 <SelectTrigger
                   id="lesson"
-                  className="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                  className="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 disabled:opacity-50"
                 >
                   <SelectValue placeholder="-- Choose a lesson --" />
                 </SelectTrigger>
@@ -194,7 +267,7 @@ export default function FilePage() {
                             controls
                             src={`/uploads/${f.filename}`}
                             className={`${
-                              isStudent
+                              isViewer
                                 ? "w-full h-auto"
                                 : "w-full sm:flex-1 sm:w-3/4 h-auto"
                             } rounded-lg`}

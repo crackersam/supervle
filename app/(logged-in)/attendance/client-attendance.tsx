@@ -91,7 +91,7 @@ export default function ClientAttendance({
     }
   }, [options, allowSearch, autoLoaded]);
 
-  /* ------------------------ Manual fetch (Admin/Teacher) ------------------------ */
+  /* ------------------------ Manual fetch (Admin/Teacher/Guardian with multiple) ------------------------ */
   async function view(): Promise<void> {
     if (!selectedId) return;
     setLoading(true);
@@ -164,8 +164,8 @@ export default function ClientAttendance({
               </div>
             )}
 
-            {/* Show button only when search/select is required (Admin/Teacher) */}
-            {allowSearch && (
+            {/* Show button when search/select is required (Admin/Teacher/Guardian with multiple) */}
+            {(allowSearch || options.length > 1) && (
               <Button
                 onClick={view}
                 disabled={!selectedId || loading}

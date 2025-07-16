@@ -28,6 +28,12 @@ const menuItems: MenuItem[] = [
     category: "Admin Tools",
   },
   {
+    path: "/admin/assign-guardian",
+    label: "Assign Guardian",
+    roles: ["ADMIN"],
+    category: "Admin Tools",
+  },
+  {
     path: "/restricted/schedules",
     label: "Schedules",
     roles: ["TEACHER", "ADMIN"],
@@ -87,6 +93,12 @@ const menuItems: MenuItem[] = [
     roles: ["STUDENT", "GUARDIAN"],
     category: "Personal Tools",
   },
+  {
+    path: "/",
+    label: "Dashboard",
+    roles: ["STUDENT", "TEACHER", "GUARDIAN", "ADMIN"],
+    category: "Personal Tools",
+  },
 ];
 
 const MenuItems = () => {
@@ -119,7 +131,7 @@ const MenuItems = () => {
     <div className="flex flex-col gap-4 px-4 h-full">
       <div className="flex-grow">
         {Object.entries(groupedItems).map(([category, items]) => (
-          <div key={category}>
+          <div key={category} className="mb-6">
             <h3 className="font-semibold text-lg mb-2">{category}</h3>
             <div className="flex flex-col gap-2">
               {items.map((item) => (

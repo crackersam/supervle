@@ -8,8 +8,14 @@ export default async function UploadHomeworkPage() {
   if (!session?.user?.id) redirect("/login");
   const teacherId = session.user.id;
 
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
   const occurrences = await prisma.lessonOccurrence.findMany({
-    where: { lesson: { users: { some: { userId: teacherId } } } },
+    where: {
+      lesson: { users: { some: { userId: teacherId } } },
+      start: { gte: today },
+    },
     include: { lesson: true },
     orderBy: { start: "asc" },
   });

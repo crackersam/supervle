@@ -62,7 +62,7 @@ export default function CalendarClient({
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            {session.user?.role === "ADMIN" && (
+            {studentList.length > 1 && (
               <div className="space-y-2">
                 <Label
                   htmlFor="student-select"
