@@ -43,7 +43,6 @@ export default function CalendarClient({
   studentList,
   calendarMap,
   initialSelectedId,
-  session,
 }: CalendarClientProps) {
   // Store selectedId as a string
   const [selectedId, setSelectedId] = useState<string>(initialSelectedId);
