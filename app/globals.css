@@ -127,3 +127,6 @@ body {
   height: 100%;
   overflow: hidden;
 }
+.react-calendar {
+  border: none !important;
+}

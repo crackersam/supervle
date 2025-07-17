@@ -215,13 +215,13 @@ const Home = async () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-screen-xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="space-y-8 lg:col-span-2">
+      <div className="max-w-screen-xl mx-auto grid grid-cols-1 xl:grid-cols-3 gap-8">
+        <div className="space-y-8 xl:col-span-2">
           {/* Stats Blocks */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Card className="bg-purple-100 rounded-2xl shadow-sm">
               <CardHeader className="text-center pb-0">
-                <div className="inline-flex items-center px-3 py-1 rounded-full bg-white text-green-600 text-xs font-medium">
+                <div className="inline-flex items-center w-fit px-3 py-1 rounded-full bg-white text-green-600 text-xs font-medium">
                   {academicYear}
                 </div>
               </CardHeader>
@@ -234,7 +234,7 @@ const Home = async () => {
             </Card>
             <Card className="bg-yellow-100 rounded-2xl shadow-sm">
               <CardHeader className="text-center pb-0">
-                <div className="inline-flex items-center px-3 py-1 rounded-full bg-white text-green-600 text-xs font-medium">
+                <div className="inline-flex items-center px-3 py-1 w-fit rounded-full bg-white text-green-600 text-xs font-medium">
                   {academicYear}
                 </div>
               </CardHeader>
@@ -247,7 +247,7 @@ const Home = async () => {
             </Card>
             <Card className="bg-purple-100 rounded-2xl shadow-sm">
               <CardHeader className="text-center pb-0">
-                <div className="inline-flex items-center px-3 py-1 rounded-full bg-white text-green-600 text-xs font-medium">
+                <div className="inline-flex items-center px-3 py-1 w-fit rounded-full bg-white text-green-600 text-xs font-medium">
                   {academicYear}
                 </div>
               </CardHeader>
@@ -260,7 +260,7 @@ const Home = async () => {
             </Card>
             <Card className="bg-yellow-100 rounded-2xl shadow-sm">
               <CardHeader className="text-center pb-0">
-                <div className="inline-flex items-center px-3 py-1 rounded-full bg-white text-green-600 text-xs font-medium">
+                <div className="inline-flex items-center px-3 py-1 w-fit rounded-full bg-white text-green-600 text-xs font-medium">
                   {academicYear}
                 </div>
               </CardHeader>
@@ -283,11 +283,11 @@ const Home = async () => {
           </div>
 
           {/* Quick Actions */}
-          <div className="flex flex-row justify-between items-stretch overflow-x-auto pb-4 snap-x snap-mandatory">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
             {content.actions.map((action) => (
               <Card
                 key={action.href}
-                className="hover:shadow-xl transition-shadow duration-300 flex-shrink-0 w-[250px] snap-center"
+                className="hover:shadow-xl transition-shadow duration-300 flex-shrink-0 min-w-[250px] snap-center"
               >
                 <CardHeader className="flex items-center space-x-4">
                   <action.icon className="h-6 w-6 text-indigo-600" />
@@ -373,15 +373,16 @@ const Home = async () => {
             </Card>
           )}
         </div>
-
-        <EventsSection
-          initialEvents={initialEvents.map((e) => ({
-            id: e.id,
-            title: e.title,
-            start: e.start.toISOString(),
-            end: e.end.toISOString(),
-          }))}
-        />
+        <div className="flex justify-center items-center">
+          <EventsSection
+            initialEvents={initialEvents.map((e) => ({
+              id: e.id,
+              title: e.title,
+              start: e.start.toISOString(),
+              end: e.end.toISOString(),
+            }))}
+          />
+        </div>
       </div>
     </div>
   );

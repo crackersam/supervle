@@ -46,7 +46,7 @@ const EventsSection = ({ initialEvents }: EventsSectionProps) => {
   return (
     <div className="space-y-2 w-fit">
       <h2 className="text-2xl font-semibold">Events</h2>
-      <div className="w-full">
+      <div className="w-full flex justify-center items-center">
         <DynamicCalendar
           onChange={(value) => setDate(value as Date)}
           value={date}
@@ -64,7 +64,7 @@ const EventsSection = ({ initialEvents }: EventsSectionProps) => {
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-4 mb-5">
           {events.map((event) => (
             <Card
               key={event.id}
