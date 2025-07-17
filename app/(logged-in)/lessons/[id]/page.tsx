@@ -43,17 +43,14 @@ import {
 } from "lucide-react";
 import { revalidatePath } from "next/cache";
 
-interface Params {
-  params: { id: string };
-}
-
-const LessonDetailsPage = async ({ params }: Params) => {
+const LessonDetailsPage = async ({ params }: { params: { id: string } }) => {
   const session = await auth();
   if (!session || !session.user) {
     return notFound();
   }
 
-  const lessonId = parseInt(params.id, 10);
+  const { id } = await params;
+  const lessonId = parseInt(id, 10);
   if (isNaN(lessonId)) {
     return notFound();
   }
