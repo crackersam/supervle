@@ -194,15 +194,85 @@ const Home = async () => {
       rrule: null,
       start: { gte: weekStart, lte: weekEnd },
     },
-    select: { id: true, title: true, start: true },
+    select: { id: true, title: true, start: true, end: true },
     orderBy: { start: "desc" },
     take: 3,
   });
+
+  const studentCount = await prisma.user.count({ where: { role: "STUDENT" } });
+  const teacherCount = await prisma.user.count({ where: { role: "TEACHER" } });
+  const guardianCount = await prisma.user.count({
+    where: { role: "GUARDIAN" },
+  });
+  const staffCount = await prisma.user.count({ where: { role: "ADMIN" } });
+
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth() + 1; // 1-12
+  const academicYear =
+    currentMonth >= 9
+      ? `${currentYear}/${(currentYear + 1) % 100}`
+      : `${currentYear - 1}/${currentYear % 100}`;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-screen-xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="space-y-8 lg:col-span-2">
+          {/* Stats Blocks */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <Card className="bg-purple-100 rounded-2xl shadow-sm">
+              <CardHeader className="text-center pb-0">
+                <div className="inline-flex items-center px-3 py-1 rounded-full bg-white text-green-600 text-xs font-medium">
+                  {academicYear}
+                </div>
+              </CardHeader>
+              <CardContent className="text-center">
+                <h2 className="text-3xl font-bold">
+                  {studentCount.toLocaleString()}
+                </h2>
+                <p className="text-sm text-gray-600">Students</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-yellow-100 rounded-2xl shadow-sm">
+              <CardHeader className="text-center pb-0">
+                <div className="inline-flex items-center px-3 py-1 rounded-full bg-white text-green-600 text-xs font-medium">
+                  {academicYear}
+                </div>
+              </CardHeader>
+              <CardContent className="text-center">
+                <h2 className="text-3xl font-bold">
+                  {teacherCount.toLocaleString()}
+                </h2>
+                <p className="text-sm text-gray-600">Teachers</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-purple-100 rounded-2xl shadow-sm">
+              <CardHeader className="text-center pb-0">
+                <div className="inline-flex items-center px-3 py-1 rounded-full bg-white text-green-600 text-xs font-medium">
+                  {academicYear}
+                </div>
+              </CardHeader>
+              <CardContent className="text-center">
+                <h2 className="text-3xl font-bold">
+                  {guardianCount.toLocaleString()}
+                </h2>
+                <p className="text-sm text-gray-600">Parents</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-yellow-100 rounded-2xl shadow-sm">
+              <CardHeader className="text-center pb-0">
+                <div className="inline-flex items-center px-3 py-1 rounded-full bg-white text-green-600 text-xs font-medium">
+                  {academicYear}
+                </div>
+              </CardHeader>
+              <CardContent className="text-center">
+                <h2 className="text-3xl font-bold">
+                  {staffCount.toLocaleString()}
+                </h2>
+                <p className="text-sm text-gray-600">Staffs</p>
+              </CardContent>
+            </Card>
+          </div>
+
           {/* Hero Section */}
           <div className="text-center">
             <h1 className="text-4xl font-extrabold text-gray-900 sm:text-5xl">
@@ -309,6 +379,7 @@ const Home = async () => {
             id: e.id,
             title: e.title,
             start: e.start.toISOString(),
+            end: e.end.toISOString(),
           }))}
         />
       </div>

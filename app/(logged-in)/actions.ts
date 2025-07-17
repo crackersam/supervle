@@ -11,7 +11,7 @@ export async function getNonRecurringEvents(start: string, end: string) {
       rrule: null,
       start: { gte: weekStart, lte: weekEnd },
     },
-    select: { id: true, title: true, start: true },
+    select: { id: true, title: true, start: true, end: true },
     orderBy: { start: "desc" },
     take: 3,
   });
@@ -19,5 +19,6 @@ export async function getNonRecurringEvents(start: string, end: string) {
     id: e.id,
     title: e.title,
     start: e.start.toISOString(),
+    end: e.end.toISOString(),
   }));
 }
