@@ -45,13 +45,15 @@ const EventsSection = ({ initialEvents }: EventsSectionProps) => {
 
   return (
     <div className="space-y-2 w-fit">
-      <h2 className="text-2xl font-semibold">Events</h2>
-      <div className="w-full flex justify-center items-center">
+      <div className="w-full flex flex-col justify-center items-center">
         <DynamicCalendar
           onChange={(value) => setDate(value as Date)}
           value={date}
-          className="rounded-lg w-full"
+          className="rounded-lg w-full shadow-sm"
         />
+        <h2 className="text-2xl font-semibold text-left w-full mt-4 ml-2">
+          Events
+        </h2>
       </div>
       {loading ? (
         <p className="text-gray-600">Loading...</p>

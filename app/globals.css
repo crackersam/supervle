@@ -130,3 +130,12 @@ body {
 .react-calendar {
   border: none !important;
 }
+.react-calendar__tile--now {
+  @apply !bg-yellow-100 rounded-sm;
+}
+.react-calendar__tile--active {
+  @apply !bg-purple-100 !text-black rounded-sm;
+}
+.react-calendar__tile {
+  @apply !text-black;
+}

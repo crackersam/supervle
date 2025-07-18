@@ -373,7 +373,7 @@ const Home = async () => {
             </Card>
           )}
         </div>
-        <div className="flex justify-center items-center">
+        <div className="flex justify-center">
           <EventsSection
             initialEvents={initialEvents.map((e) => ({
               id: e.id,
