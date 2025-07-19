@@ -214,175 +214,165 @@ const Home = async () => {
       : `${currentYear - 1}/${currentYear % 100}`;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-screen-xl mx-auto grid grid-cols-1 xl:grid-cols-3 gap-8">
-        <div className="space-y-8 xl:col-span-2">
-          {/* Stats Blocks */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Card className="bg-purple-100 rounded-2xl shadow-sm">
-              <CardHeader className="text-center pb-0">
-                <div className="inline-flex items-center w-fit px-3 py-1 rounded-full bg-white text-green-600 text-xs font-medium">
-                  {academicYear}
-                </div>
-              </CardHeader>
-              <CardContent className="text-center">
-                <h2 className="text-3xl font-bold">
-                  {studentCount.toLocaleString()}
-                </h2>
-                <p className="text-sm text-gray-600">Students</p>
-              </CardContent>
-            </Card>
-            <Card className="bg-yellow-100 rounded-2xl shadow-sm">
-              <CardHeader className="text-center pb-0">
-                <div className="inline-flex items-center px-3 py-1 w-fit rounded-full bg-white text-green-600 text-xs font-medium">
-                  {academicYear}
-                </div>
-              </CardHeader>
-              <CardContent className="text-center">
-                <h2 className="text-3xl font-bold">
-                  {teacherCount.toLocaleString()}
-                </h2>
-                <p className="text-sm text-gray-600">Teachers</p>
-              </CardContent>
-            </Card>
-            <Card className="bg-purple-100 rounded-2xl shadow-sm">
-              <CardHeader className="text-center pb-0">
-                <div className="inline-flex items-center px-3 py-1 w-fit rounded-full bg-white text-green-600 text-xs font-medium">
-                  {academicYear}
-                </div>
-              </CardHeader>
-              <CardContent className="text-center">
-                <h2 className="text-3xl font-bold">
-                  {guardianCount.toLocaleString()}
-                </h2>
-                <p className="text-sm text-gray-600">Parents</p>
-              </CardContent>
-            </Card>
-            <Card className="bg-yellow-100 rounded-2xl shadow-sm">
-              <CardHeader className="text-center pb-0">
-                <div className="inline-flex items-center px-3 py-1 w-fit rounded-full bg-white text-green-600 text-xs font-medium">
-                  {academicYear}
-                </div>
-              </CardHeader>
-              <CardContent className="text-center">
-                <h2 className="text-3xl font-bold">
-                  {staffCount.toLocaleString()}
-                </h2>
-                <p className="text-sm text-gray-600">Staffs</p>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Hero Section */}
-          <div className="text-center">
-            <h1 className="text-4xl font-extrabold text-gray-900 sm:text-5xl">
-              Welcome back, {forename}!
-            </h1>
-            <p className="mt-3 text-xl text-gray-600">Your {content.title}</p>
-            <p className="mt-2 text-lg text-gray-500">{content.description}</p>
-          </div>
-
-          {/* Quick Actions */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-            {content.actions.map((action) => (
-              <Card
-                key={action.href}
-                className="hover:shadow-xl transition-shadow duration-300 flex-shrink-0 min-w-[250px] snap-center"
-              >
-                <CardHeader className="flex items-center space-x-4">
-                  <action.icon className="h-6 w-6 text-indigo-600" />
-                  <CardTitle>{action.label}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Button asChild variant="outline" className="w-full">
-                    <Link href={action.href}>Go to {action.label}</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {/* Upcoming Lessons */}
-          {role === "GUARDIAN" ? (
-            <GuardianUpcomingLessons
-              students={students}
-              allUpcomingLessons={allUpcomingLessons}
-            />
-          ) : (
-            <Card className="hover:shadow-xl transition-shadow duration-300">
-              <CardHeader>
-                <CardTitle>Upcoming Lessons</CardTitle>
-                <CardDescription>
-                  Your next sessions at a glance.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {upcomingLessons.length === 0 ? (
-                  <p className="text-gray-600">
-                    No upcoming lessons scheduled.
-                  </p>
-                ) : (
-                  <ul className="space-y-4">
-                    {upcomingLessons.map((lesson) => (
-                      <li
-                        key={lesson.id}
-                        className="flex flex-wrap justify-between items-center border-b pb-2 gap-2"
-                      >
-                        <div className="flex-grow min-w-0">
-                          <h3 className="font-semibold truncate">
-                            {lesson.lesson.title}
-                          </h3>
-                          <p
-                            className="text-sm text-gray-500 truncate"
-                            suppressHydrationWarning
-                          >
-                            {format(
-                              new Date(lesson.start),
-                              "MMMM d, yyyy - h:mm a"
-                            )}
-                          </p>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          asChild
-                          className="flex-shrink-0"
-                        >
-                          <Link href={`/lessons/${lesson.lesson.id}`}>
-                            Details
-                          </Link>
-                        </Button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </CardContent>
-            </Card>
-          )}
-
-          {role === "STUDENT" && attendanceData.length > 0 && (
-            <Card className="hover:shadow-xl transition-shadow duration-300">
-              <CardHeader>
-                <CardTitle>Attendance Overview</CardTitle>
-                <CardDescription>
-                  Attendance rate (%) over the last 7 weekdays.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <AttendanceChart data={attendanceData} />
-              </CardContent>
-            </Card>
-          )}
+    <div className="max-w-screen-xl mx-auto  py-12 grid grid-cols-1 xl:grid-cols-3 gap-8">
+      <div className="space-y-8 xl:col-span-2">
+        {/* Stats Blocks */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Card className="bg-purple-100 rounded-2xl shadow-sm">
+            <CardHeader className="text-center pb-0">
+              <div className="inline-flex items-center w-fit px-3 py-1 rounded-full bg-white text-green-600 text-xs font-medium">
+                {academicYear}
+              </div>
+            </CardHeader>
+            <CardContent className="text-center">
+              <h2 className="text-3xl font-bold">
+                {studentCount.toLocaleString()}
+              </h2>
+              <p className="text-sm text-gray-600">Students</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-yellow-100 rounded-2xl shadow-sm">
+            <CardHeader className="text-center pb-0">
+              <div className="inline-flex items-center px-3 py-1 w-fit rounded-full bg-white text-green-600 text-xs font-medium">
+                {academicYear}
+              </div>
+            </CardHeader>
+            <CardContent className="text-center">
+              <h2 className="text-3xl font-bold">
+                {teacherCount.toLocaleString()}
+              </h2>
+              <p className="text-sm text-gray-600">Teachers</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-purple-100 rounded-2xl shadow-sm">
+            <CardHeader className="text-center pb-0">
+              <div className="inline-flex items-center px-3 py-1 w-fit rounded-full bg-white text-green-600 text-xs font-medium">
+                {academicYear}
+              </div>
+            </CardHeader>
+            <CardContent className="text-center">
+              <h2 className="text-3xl font-bold">
+                {guardianCount.toLocaleString()}
+              </h2>
+              <p className="text-sm text-gray-600">Parents</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-yellow-100 rounded-2xl shadow-sm">
+            <CardHeader className="text-center pb-0">
+              <div className="inline-flex items-center px-3 py-1 w-fit rounded-full bg-white text-green-600 text-xs font-medium">
+                {academicYear}
+              </div>
+            </CardHeader>
+            <CardContent className="text-center">
+              <h2 className="text-3xl font-bold">
+                {staffCount.toLocaleString()}
+              </h2>
+              <p className="text-sm text-gray-600">Staffs</p>
+            </CardContent>
+          </Card>
         </div>
-        <div className="flex justify-center">
-          <EventsSection
-            initialEvents={initialEvents.map((e) => ({
-              id: e.id,
-              title: e.title,
-              start: e.start.toISOString(),
-              end: e.end.toISOString(),
-            }))}
+
+        {/* Hero Section */}
+        <div className="text-center">
+          <h1 className="text-4xl font-extrabold text-gray-900 sm:text-5xl">
+            Welcome back, {forename}!
+          </h1>
+          <p className="mt-3 text-xl text-gray-600">Your {content.title}</p>
+          <p className="mt-2 text-lg text-gray-500">{content.description}</p>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+          {content.actions.map((action) => (
+            <Card
+              key={action.href}
+              className="hover:shadow-xl transition-shadow duration-300 flex-shrink-0 min-w-[250px] snap-center"
+            >
+              <CardHeader className="flex items-center space-x-4">
+                <action.icon className="h-6 w-6 text-indigo-600" />
+                <CardTitle>{action.label}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Button asChild variant="outline" className="w-full">
+                  <Link href={action.href}>Go to {action.label}</Link>
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Upcoming Lessons */}
+        {role === "GUARDIAN" ? (
+          <GuardianUpcomingLessons
+            students={students}
+            allUpcomingLessons={allUpcomingLessons}
           />
-        </div>
+        ) : (
+          <Card className="hover:shadow-xl transition-shadow duration-300">
+            <CardHeader>
+              <CardTitle>Upcoming Lessons</CardTitle>
+              <CardDescription>Your next sessions at a glance.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {upcomingLessons.length === 0 ? (
+                <p className="text-gray-600">No upcoming lessons scheduled.</p>
+              ) : (
+                <ul className="space-y-4">
+                  {upcomingLessons.map((lesson) => (
+                    <li
+                      key={lesson.id}
+                      className="flex flex-wrap justify-between items-center border-b pb-2 gap-2"
+                    >
+                      <div className="flex-grow min-w-0">
+                        <h3 className="font-semibold truncate">
+                          {lesson.lesson.title}
+                        </h3>
+                        <p
+                          className="text-sm text-gray-500 truncate"
+                          suppressHydrationWarning
+                        >
+                          {format(
+                            new Date(lesson.start),
+                            "MMMM d, yyyy - h:mm a"
+                          )}
+                        </p>
+                      </div>
+                      <Button variant="ghost" asChild className="flex-shrink-0">
+                        <Link href={`/lessons/${lesson.lesson.id}`}>
+                          Details
+                        </Link>
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {role === "STUDENT" && attendanceData.length > 0 && (
+          <Card className="hover:shadow-xl transition-shadow duration-300">
+            <CardHeader>
+              <CardTitle>Attendance Overview</CardTitle>
+              <CardDescription>
+                Attendance rate (%) over the last 7 weekdays.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <AttendanceChart data={attendanceData} />
+            </CardContent>
+          </Card>
+        )}
+      </div>
+      <div className="flex justify-center">
+        <EventsSection
+          initialEvents={initialEvents.map((e) => ({
+            id: e.id,
+            title: e.title,
+            start: e.start.toISOString(),
+            end: e.end.toISOString(),
+          }))}
+        />
       </div>
     </div>
   );

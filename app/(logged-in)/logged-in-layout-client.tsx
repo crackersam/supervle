@@ -12,6 +12,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import MenuItems from "@/components/menu-items";
+import Header from "@/components/header";
 
 function LoggedInLayoutClient({ children }: { children: React.ReactNode }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -46,8 +47,15 @@ function LoggedInLayoutClient({ children }: { children: React.ReactNode }) {
         <MenuItems />
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 h-full overflow-auto">{children}</main>
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col h-full overflow-hidden">
+        {/* Main Content */}
+        <main className="flex-1 overflow-auto min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 px-4 sm:px-6 lg:px-8">
+          <Header />
+
+          {children}
+        </main>
+      </div>
     </div>
   );
 }
