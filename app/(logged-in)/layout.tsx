@@ -21,7 +21,7 @@ const LoggedInLayout = async ({
   // Otherwise render the logged-in layout with client-side responsiveness
   return (
     <SessionProvider session={session}>
-      <LoggedInLayoutClient>{children}</LoggedInLayoutClient>;
+      <LoggedInLayoutClient session={session}>{children}</LoggedInLayoutClient>;
     </SessionProvider>
   );
 };

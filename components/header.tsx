@@ -1,8 +1,7 @@
 "use client";
 
 import React from "react";
-import { Avatar, AvatarImage } from "./ui/avatar";
-import { useSession } from "next-auth/react";
+import { Avatar } from "./ui/avatar";
 import { AvatarFallback } from "@radix-ui/react-avatar";
 import {
   DropdownMenu,
@@ -14,13 +13,11 @@ import {
 } from "./ui/dropdown-menu";
 import Image from "next/image";
 import Logo from "@/public/supervle-logo.png";
+import { useRouter } from "next/navigation";
+import { Session } from "next-auth";
 
-const Header = () => {
-  const { data: session, status } = useSession();
-
-  if (status === "loading") {
-    return <div>Loading...</div>; // Or a skeleton loader
-  }
+const Header = ({ session }: { session: Session }) => {
+  const router = useRouter();
 
   return (
     <div className="max-w-7xl mx-auto flex justify-between items-center py-2">
@@ -46,16 +43,27 @@ const Header = () => {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Avatar className="cursor-pointer border border-gray-300 bg-white shadow-sm h-[50px] w-[50px]">
-              <AvatarImage src={session?.user?.image || ""} />
-              <AvatarFallback className="flex items-center justify-center w-full">
-                {session?.user?.forename ? session.user.forename[0] : "?"}
-              </AvatarFallback>
+              {session?.user?.image ? (
+                <Image
+                  src={session.user.image}
+                  alt="User Avatar"
+                  width={50}
+                  height={50}
+                  className="rounded-full object-cover"
+                />
+              ) : (
+                <AvatarFallback className="flex items-center justify-center w-full">
+                  {session?.user?.forename ? session.user.forename[0] : "?"}
+                </AvatarFallback>
+              )}
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Profile</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => router.push("/profile")}>
+              Profile
+            </DropdownMenuItem>
             <DropdownMenuItem>Messages</DropdownMenuItem>
             <DropdownMenuItem>Settings</DropdownMenuItem>
             <DropdownMenuItem>Logout</DropdownMenuItem>

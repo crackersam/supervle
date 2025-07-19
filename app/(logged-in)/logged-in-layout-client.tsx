@@ -13,8 +13,15 @@ import {
 } from "@/components/ui/sheet";
 import MenuItems from "@/components/menu-items";
 import Header from "@/components/header";
+import { Session } from "next-auth";
 
-function LoggedInLayoutClient({ children }: { children: React.ReactNode }) {
+function LoggedInLayoutClient({
+  session,
+  children,
+}: {
+  children: React.ReactNode;
+  session: Session;
+}) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
@@ -50,8 +57,8 @@ function LoggedInLayoutClient({ children }: { children: React.ReactNode }) {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col h-full overflow-hidden">
         {/* Main Content */}
-        <main className="flex-1 overflow-auto min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 px-4 sm:px-6 lg:px-8">
-          <Header />
+        <main className="flex-1 overflow-auto min-h-screen bg-gradient-to-b from-blue-50 to-indigo-200 px-4 sm:px-6 lg:px-8">
+          <Header session={session} />
 
           {children}
         </main>
