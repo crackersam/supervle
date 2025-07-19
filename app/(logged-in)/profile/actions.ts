@@ -22,6 +22,18 @@ const actionClient = createSafeActionClient().use(async ({ next }) => {
 export const uploadAvatar = actionClient
   .inputSchema(avatarInputSchema)
   .action(async ({ parsedInput: { avatar }, ctx: { userId } }) => {
+    // Fetch the current user's image
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { image: true },
+    });
+
+    // If there is a previous image, delete it from the file system
+    if (user?.image) {
+      const existingImagePath = path.join(process.cwd(), "public", user.image);
+      await fs.unlink(existingImagePath).catch(() => {}); // Ignore if file doesn't exist
+    }
+
     const uuid = crypto.randomUUID();
     const ext = path.extname(avatar.name);
     const fileName = `${uuid}${ext}`;
