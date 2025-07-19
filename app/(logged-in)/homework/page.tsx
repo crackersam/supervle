@@ -50,7 +50,7 @@ export default async function HomeworkListPage() {
       })
     );
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-100 to-blue-200 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="py-6">
         <div className="max-w-4xl mx-auto space-y-8">
           <Card className="shadow-lg rounded-2xl border border-gray-200">
             <CardHeader>
@@ -88,7 +88,7 @@ export default async function HomeworkListPage() {
     });
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-100 to-blue-200 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="py-6">
         <div className="max-w-4xl mx-auto space-y-8">
           <Card className="shadow-lg rounded-2xl border border-gray-200">
             <CardHeader>
