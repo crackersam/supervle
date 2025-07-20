@@ -62,7 +62,7 @@ const RightColumn = ({
   }, [date]);
 
   return (
-    <div className="space-y-2 w-fit">
+    <div className="space-y-2 w-[350px]">
       <div className="w-full flex flex-col justify-center items-center">
         <DynamicCalendar
           onChange={(value) => setDate(value as Date)}
