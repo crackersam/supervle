@@ -12,7 +12,6 @@ import { Calendar, BookOpen, CheckCircle, Users } from "lucide-react";
 import Link from "next/link";
 import { prisma } from "@/prisma-singleton";
 import { format } from "date-fns";
-import AttendanceChart from "./AttendanceChart";
 import GuardianUpcomingLessons from "./GuardianUpcomingLessons";
 import RightColumn from "./RightColumn";
 
@@ -82,7 +81,6 @@ const Home = async () => {
     })
     .slice(0, 3);
 
-  let attendanceData: { name: string; value: number }[] = [];
   if (role === "STUDENT") {
     let weekdays: Date[] = [];
     const current = new Date();
@@ -119,14 +117,6 @@ const Home = async () => {
       group.total++;
       if (att.present) group.present++;
     }
-    // now data
-    attendanceData = weekdays.map((date) => {
-      const dayStr = format(date, "yyyy-MM-dd");
-      const group = attMap.get(dayStr);
-      const rate =
-        group && group.total > 0 ? (group.present / group.total) * 100 : 0;
-      return { name: format(date, "MMM d"), value: rate };
-    });
   }
 
   const roleSpecificContent = {
@@ -355,20 +345,6 @@ const Home = async () => {
                   ))}
                 </ul>
               )}
-            </CardContent>
-          </Card>
-        )}
-
-        {role === "STUDENT" && attendanceData.length > 0 && (
-          <Card className="hover:shadow-xl transition-shadow duration-300">
-            <CardHeader>
-              <CardTitle>Attendance Overview</CardTitle>
-              <CardDescription>
-                Attendance rate (%) over the last 7 weekdays.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <AttendanceChart data={attendanceData} />
             </CardContent>
           </Card>
         )}
