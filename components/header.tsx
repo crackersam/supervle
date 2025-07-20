@@ -20,13 +20,13 @@ const Header = ({ session }: { session: Session }) => {
   const router = useRouter();
 
   return (
-    <div className="max-w-7xl mx-auto flex justify-between items-center py-2">
+    <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center py-2">
       <Image
         src={Logo}
         alt="Logo"
         width={150}
         height={50}
-        className="h-[50px] w-[200px] -mx-10 mt-5 object-cover"
+        className="h-[50px] w-[200px] md:-mx-10 -mx-5 mt-5 object-cover"
       />
       <div className="flex items-center space-x-4">
         <div className="flex flex-col">
