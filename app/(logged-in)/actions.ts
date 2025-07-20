@@ -22,3 +22,13 @@ export async function getNonRecurringEvents(start: string, end: string) {
     end: e.end.toISOString(),
   }));
 }
+
+export async function getAnnouncements(weekStart: string, weekEnd: string) {
+  return prisma.announcement.findMany({
+    where: {
+      date: { gte: new Date(weekStart), lte: new Date(weekEnd) },
+    },
+    orderBy: { date: "desc" },
+    take: 3,
+  });
+}

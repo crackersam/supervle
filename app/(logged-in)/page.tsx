@@ -1,3 +1,4 @@
+// app/home/page.tsx (updated Home component)
 import { auth } from "@/auth";
 import {
   Card,
@@ -13,7 +14,7 @@ import { prisma } from "@/prisma-singleton";
 import { format } from "date-fns";
 import AttendanceChart from "./AttendanceChart";
 import GuardianUpcomingLessons from "./GuardianUpcomingLessons";
-import EventsSection from "./EventsSection";
+import RightColumn from "./RightColumn";
 
 const Home = async () => {
   const session = await auth();
@@ -199,6 +200,14 @@ const Home = async () => {
     take: 3,
   });
 
+  const initialAnnouncements = await prisma.announcement.findMany({
+    where: {
+      date: { gte: weekStart, lte: weekEnd },
+    },
+    orderBy: { date: "desc" },
+    take: 3,
+  });
+
   const studentCount = await prisma.user.count({ where: { role: "STUDENT" } });
   const teacherCount = await prisma.user.count({ where: { role: "TEACHER" } });
   const guardianCount = await prisma.user.count({
@@ -365,13 +374,14 @@ const Home = async () => {
         )}
       </div>
       <div className="flex justify-center">
-        <EventsSection
+        <RightColumn
           initialEvents={initialEvents.map((e) => ({
             id: e.id,
             title: e.title,
             start: e.start.toISOString(),
             end: e.end.toISOString(),
           }))}
+          initialAnnouncements={initialAnnouncements}
         />
       </div>
     </div>
