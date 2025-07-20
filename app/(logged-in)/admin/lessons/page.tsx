@@ -1,3 +1,4 @@
+// app/lessons/page.tsx
 import { prisma } from "@/prisma-singleton";
 import React from "react";
 import Lessons from "./lessons";
@@ -22,11 +23,11 @@ const LessonsPage = async () => {
   });
 
   return (
-    <>
-      <Lessons lessons={lessons} users={users} />{" "}
+    <div className="flex flex-col items-center">
+      <Lessons lessons={lessons} users={users} />
       <Dialog>
         <DialogTrigger asChild>
-          <Button className=" w-52">Schedule lesson</Button>
+          <Button className="w-52 mt-4">Schedule lesson</Button>
         </DialogTrigger>
         <DialogContent
           className="w-auto"
@@ -35,11 +36,10 @@ const LessonsPage = async () => {
           <DialogHeader>
             <DialogTitle>Schedule lesson</DialogTitle>
           </DialogHeader>
-
           <AddEventForm />
         </DialogContent>
       </Dialog>
-    </>
+    </div>
   );
 };
 

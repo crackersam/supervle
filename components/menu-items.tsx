@@ -34,6 +34,12 @@ const menuItems: MenuItem[] = [
     category: "Admin Tools",
   },
   {
+    path: "/admin/announcement",
+    label: "Announcements",
+    roles: ["ADMIN"],
+    category: "Admin Tools",
+  },
+  {
     path: "/restricted/schedules",
     label: "Schedules",
     roles: ["TEACHER", "ADMIN"],
